@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.music.mapper.PregnantMusicLabelMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.music.entity.PregnantMusicLabel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="label_name" property="labelName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, label_name
+  </sql>
+  
+  <!-- 新增标签返回标签ID -->
+  <insert id="insertLabel" parameterType="com.jumper.angel.home.music.entity.PregnantMusicLabel" useGeneratedKeys="true" keyProperty="id">
+    insert into pregnant_music_label (label_name)
+    values (#{labelName,jdbcType=VARCHAR})
+  </insert>
+  
+  <!-- 查询所有标签 -->
+  <select id="findLabelAll" resultMap="BaseResultMap">
+  	select
+  		<include refid="Base_Column_List"></include>
+  	from pregnant_music_label
+  </select>
+  
+  <!-- 删除标签 -->
+  <delete id="deleteLabel" parameterType="Integer">
+  	delete from pregnant_music_label where id=#{value}
+  </delete>
+  
+  <!-- 通过标签名查询是否存在 -->
+  <select id="findLabelByName" resultMap="BaseResultMap" parameterType="String">
+  	select
+  		<include refid="Base_Column_List"></include>
+  	from pregnant_music_label where label_name=#{value}
+  </select>
+  
+</mapper>

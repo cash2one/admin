@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.sociality.topic.mapper.TopicNoSpeakingMapper" >
+  
+  <resultMap id="BaseResultMap" type="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" >
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="TOPIC_ID" property="topicId" jdbcType="BIGINT" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="DATE" />
+    <result column="IS_BLACKLIST" property="isBlacklist" jdbcType="INTEGER" />
+    <result column="IS_DELETE" property="isDelete" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    USER_ID, TOPIC_ID, CREATE_TIME, IS_BLACKLIST, IS_DELETE
+  </sql>
+
+   <!--   根据用户id查询用户禁言话题信息 -->
+  <select id="getTopicNoSpeakingByUserId" resultMap="BaseResultMap" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_IM_TOPIC_NOSPEAKING
+    where  USER_ID = #{userId,jdbcType=VARCHAR} 
+  </select>
+  
+  <!--   根据用户id和话题ID查询用户禁言话题信息 -->
+  <select id="getTopicIsForbidden" resultMap="BaseResultMap" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_IM_TOPIC_NOSPEAKING
+    where  USER_ID = #{userId,jdbcType=VARCHAR}  AND TOPIC_ID = #{topicId,jdbcType=BIGINT}
+  </select>
+  
+  <!-- 插入禁言与否记录 -->
+  <insert id="addTopicNoSpeaking" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" >
+    insert into T_IM_TOPIC_NOSPEAKING (USER_ID, TOPIC_ID,IS_BLACKLIST, IS_DELETE,CREATE_TIME)
+    values (#{userId,jdbcType=VARCHAR}, #{topicId,jdbcType=BIGINT}, #{isBlacklist,jdbcType=INTEGER}, 
+      #{isDelete,jdbcType=INTEGER},#{createDate,jdbcType=BIGINT})
+  </insert>
+  
+  <!-- 更新禁言记录 -->
+  <update id="updateTopicNoSpeaking" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO">
+  		update T_IM_TOPIC_NOSPEAKING
+  		<set>
+			<if test="userId !=null and userId !='' ">  
+				USER_ID = #{userId,jdbcType=VARCHAR} ,
+			</if>
+			<if test="topicId !=null and topicId >=0">  
+				TOPIC_ID = #{topicId,jdbcType=BIGINT} ,
+			</if>
+			<if test="isBlacklist !=null and isBlacklist >=0">  
+				IS_BLACKLIST = #{isBlacklist,jdbcType=INTEGER} ,
+			</if>
+			<if test="createDate !=null and createDate!=''">  
+				CREATE_TIME = #{createDate,jdbcType=INTEGER} ,
+			</if>
+			<if test="isDelete !=null and isDelete >=0">  
+				IS_DELETE = #{isDelete,jdbcType=INTEGER} ,
+			</if>
+  		</set>
+  		where USER_ID = #{userId,jdbcType=VARCHAR} and TOPIC_ID = #{topicId,jdbcType=BIGINT} 
+  </update>
+  
+</mapper>

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.sociality.report.mapper.ReportMapper">
+	<resultMap id="reportVOMap" type="com.jumper.angel.sociality.report.model.vo.ReportVO">
+		<id column="REPORT_ID" property="reportId" jdbcType="BIGINT" />
+		<result column="BUS_ID" property="busId" jdbcType="VARCHAR" />
+		<result column="REPORT_CONTENT" property="reportContent" jdbcType="VARCHAR" />
+		<result column="REPORT_USER_ID" property="reportUserId" jdbcType="VARCHAR" />
+		<result column="REPORT_TIME" property="reportTime" jdbcType="INTEGER" />
+		<result column="DATA_TYPE" property="dataType" jdbcType="BIGINT" />
+		<result column="DATA_STATE" property="dataState" jdbcType="BIGINT" />
+		<result column="USERNICKNAME" property="userNickName" jdbcType="VARCHAR" />
+		<result column="BE_REPORT_MESSAGE" property="beReportMessage" jdbcType="VARCHAR" />
+		<result column="GROUP_ID" property="groupId" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 举报的帖子对象 -->
+	<resultMap id="reportDebatepostVOMap" type="com.jumper.angel.sociality.report.model.vo.ReportDebatepostVO">
+		<id column="DEBATEPOST_ID" property="debatepostId" jdbcType="BIGINT" />
+		<result column="TOPIC_ID" property="topicId" jdbcType="BIGINT" />
+		<result column="DEBATEPOST_TITLE" property="debatepostTitle" jdbcType="VARCHAR" />
+		<result column="TOPIC_NAME" property="topicName" jdbcType="VARCHAR" />
+		<result column="IS_DELETE" property="isDelete" jdbcType="INTEGER" />
+		<result column="USERNICKNAME" property="userNickName" jdbcType="VARCHAR" />
+		<result column="REPORTNUM" property="reportNum" jdbcType="INTEGER" />
+	</resultMap>
+    <!-- 被举报的评论对象 -->
+    <resultMap id="reportCommentOnVOMap" type="com.jumper.angel.sociality.report.model.vo.ReportCommentOnVO">
+    	<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="FID" property="fid" jdbcType="BIGINT" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="MESSAGETYPE" property="messageType" jdbcType="VARCHAR" />
+		<result column="DEBATEPOST_ID" property="debatepostId" jdbcType="BIGINT" />
+		<result column="STATUS" property="status" jdbcType="INTEGER" />
+		<result column="DEBATEPOST_TITLE" property="debatepostTitle" jdbcType="VARCHAR" />
+		<result column="FROM_NICK_NAME" property="fromNickName" jdbcType="VARCHAR" />
+		<result column="TO_NICK_NAME" property="toNickName" jdbcType="VARCHAR" />
+		<result column="REPORTNUM" property="reportNum" jdbcType="INTEGER" />
+    </resultMap>
+    <!-- 被举报的用户 -->
+    <resultMap id="reportUserVOMap" type="com.jumper.angel.sociality.report.model.vo.ReportUserVO">
+    	<id column="USER_ID" property="userId" jdbcType="VARCHAR"/>
+    	<result column="GROUP_ID" property="groupId" jdbcType="VARCHAR" />
+    	<result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    	<result column="USER_NICK_NAME" property="userNickName" jdbcType="VARCHAR" />
+    	<result column="BE_REPORT_MESSAGE" property="beReportMessage" jdbcType="VARCHAR" />
+    	<result column="REPORTNUM" property="reportNum" jdbcType="INTEGER" />
+    </resultMap>
+    
+	<sql id="Base_Column_List">
+		REPORT_ID, BUS_ID, REPORT_CONTENT, REPORT_USER_ID,
+		REPORT_TIME,
+		DATA_TYPE, DATA_STATE,BE_REPORT_MESSAGE,GROUP_ID
+	</sql>
+	
+	<update id="update" parameterType="com.jumper.angel.sociality.report.model.vo.ReportVO">
+		update T_IM_REPORT set DATA_STATE=#{dataState,jdbcType=INTEGER} 
+		
+		where BUS_ID=#{busId,jdbcType=VARCHAR} and DATA_TYPE =#{dataType,jdbcType=BIGINT}
+		<if test="groupId !=null and groupId !=''">
+			and GROUP_ID = #{groupId,jdbcType=VARCHAR}
+		</if>
+	</update>
+	
+	<!-- 查询别举报的帖子 -->
+	<select id="selectReportDebatepost" parameterType="com.jumper.angel.sociality.report.model.vo.ReportDebatepostVO" resultMap = "reportDebatepostVOMap">
+			select t3.DEBATEPOST_ID,t3.TOPIC_ID,t3.DEBATEPOST_TITLE,t3.TOPIC_NAME,t3.IS_DELETE,t3.USERNICKNAME,t5.REPORTNUM 
+			from(
+			select t.DEBATEPOST_ID, t.TOPIC_ID, t.DEBATEPOST_TITLE,t.IS_DELETE,t1.TOPIC_NAME,
+			(select t2.nick_name from user_info t2 where t2.id = t.DEBATEPOST_USER_ID) as USERNICKNAME 
+			from T_IM_DEBATEPOST t INNER JOIN T_IM_TOPIC t1 on t.TOPIC_ID = t1.TOPIC_ID
+			where t.IS_DELETE !=2 and t1.IS_DELETE = 0
+			) t3 
+			INNER JOIN
+			(
+				select t4.BUS_ID,count(t4.BUS_ID) REPORTNUM from T_IM_REPORT t4 where t4.DATA_TYPE=1 and t4.DATA_STATE=1 group by t4.BUS_ID
+			)t5  on t3.DEBATEPOST_ID = t5.BUS_ID
+		<where>
+			<!-- 查询审核中的帖子 -->
+			<if test="status !=null and status ==1">
+				and t5.REPORTNUM &lt;=3
+			</if>
+			<!-- 查询被举报5次以及以上的帖子 -->
+			<if test="status !=null and status ==2">
+				and t3.IS_DELETE =1  and t5.REPORTNUM &gt;=5
+			</if>
+			<if test="keyword !=null and keyword !=''">
+				and (t3.DEBATEPOST_TITLE like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') or t3.USERNICKNAME like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>	
+		</where>
+		order by  t5.REPORTNUM desc
+		<if test="beginIndex !=null and everyPage !=null">
+			LIMIT #{beginIndex}, #{everyPage}
+		</if>			
+	</select>
+	<!-- 查询统计别举报的帖子 -->
+	<select id="selectCountReportDebatepost" parameterType="com.jumper.angel.sociality.report.model.vo.ReportDebatepostVO" resultType = "java.lang.Integer">
+		select count(1) from( 
+			select t3.DEBATEPOST_ID,t3.TOPIC_ID,t3.DEBATEPOST_TITLE,t3.TOPIC_NAME,t3.IS_DELETE,t3.USERNICKNAME,t5.REPORTNUM 
+			from(
+			select t.DEBATEPOST_ID, t.TOPIC_ID, t.DEBATEPOST_TITLE,t.IS_DELETE,t1.TOPIC_NAME,
+			(select t2.nick_name from user_info t2 where t2.id = t.DEBATEPOST_USER_ID) as USERNICKNAME 
+			from T_IM_DEBATEPOST t INNER JOIN T_IM_TOPIC t1 on t.TOPIC_ID = t1.TOPIC_ID
+			where t.IS_DELETE !=2 and t1.IS_DELETE = 0
+			) t3 
+			INNER JOIN
+			(
+				select t4.BUS_ID,count(t4.BUS_ID) REPORTNUM from T_IM_REPORT t4 where t4.DATA_TYPE=1 and t4.DATA_STATE=1 group by t4.BUS_ID
+			)t5  on t3.DEBATEPOST_ID = t5.BUS_ID
+		<where>
+			<!-- 查询审核中的帖子 -->
+			<if test="status !=null and status ==1">
+				and t5.REPORTNUM &lt;=3
+			</if>
+			<!-- 查询被举报5次以及以上的帖子 -->
+			<if test="status !=null and status ==2">
+				and t3.IS_DELETE =1  and t5.REPORTNUM &gt;=5
+			</if>
+			<if test="keyword !=null and keyword !=''">
+				and (t3.DEBATEPOST_TITLE like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') or t3.USERNICKNAME like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>	
+		</where>
+		)temp
+	</select>
+	
+	<!-- 查询别举报的评论 -->
+	<select id="selectReportComment" parameterType="com.jumper.angel.sociality.report.model.vo.ReportCommentOnVO" resultMap="reportCommentOnVOMap">
+		select t4.ID,t4.FID,t4.CONTENT,t4.MESSAGETYPE,t4.DEBATEPOST_ID,t4.`STATUS`,t4.DEBATEPOST_TITLE,
+			t4.FROM_NICK_NAME,t4.TO_NICK_NAME,t6.REPORTNUM from (
+			 select t.ID,t.FID,t.CONTENT,t.MESSAGETYPE,t.DEBATEPOST_ID,t.`STATUS`,t3.DEBATEPOST_TITLE,
+			(select t1.nick_name from user_info t1 where t1.id = t.FROM_USER_ID) as FROM_NICK_NAME,
+			(select t2.nick_name from user_info t2 where t2.id = t.TO_USER_ID)  as TO_NICK_NAME 
+			from T_IM_COMMENT_ON t INNER JOIN T_IM_DEBATEPOST t3 on t.DEBATEPOST_ID = t3.DEBATEPOST_ID 
+			where t.`STATUS` !=3 and t3.IS_DELETE = 0
+		) t4 INNER JOIN ( select t5.BUS_ID,count(t5.BUS_ID) REPORTNUM from T_IM_REPORT t5 where t5.DATA_TYPE=2 and t5.DATA_STATE=1 group by t5.BUS_ID ) t6 on t4.ID = t6.BUS_ID 
+		<where>
+			<!-- 查询审核中的帖子 -->
+			<if test="dataStatus !=null and dataStatus ==1">
+				and t6.REPORTNUM &lt;=3
+			</if>
+			<!-- 查询被举报5次以及以上的帖子 -->
+			<if test="dataStatus !=null and dataStatus ==2">
+				and t4.`STATUS` =2  and t6.REPORTNUM &gt;=5
+			</if>
+			<if test="keyword !=null and keyword !=''">
+				and (t4.CONTENT like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') or t4.FROM_NICK_NAME like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>
+		</where>
+		order by  t6.REPORTNUM desc
+		<if test="beginIndex !=null and everyPage !=null">
+			LIMIT #{beginIndex}, #{everyPage}
+		</if>
+	</select>
+	<!-- 统计被举报的评论 -->
+	<select id="selectCountReportComment" parameterType="com.jumper.angel.sociality.report.model.vo.ReportCommentOnVO" resultType="java.lang.Integer">
+		select count(1) from(
+			select t4.ID,t4.FID,t4.CONTENT,t4.MESSAGETYPE,t4.DEBATEPOST_ID,t4.`STATUS`,t4.DEBATEPOST_TITLE,
+			t4.FROM_NICK_NAME,t4.TO_NICK_NAME,t6.REPORTNUM from (
+			 select t.ID,t.FID,t.CONTENT,t.MESSAGETYPE,t.DEBATEPOST_ID,t.`STATUS`,t3.DEBATEPOST_TITLE,
+			(select t1.nick_name from user_info t1 where t1.id = t.FROM_USER_ID) as FROM_NICK_NAME,
+			(select t2.nick_name from user_info t2 where t2.id = t.TO_USER_ID)  as TO_NICK_NAME 
+			from T_IM_COMMENT_ON t INNER JOIN T_IM_DEBATEPOST t3 on t.DEBATEPOST_ID = t3.DEBATEPOST_ID 
+			where t.`STATUS` !=3 and t3.IS_DELETE = 0
+			) t4 INNER JOIN ( select t5.BUS_ID,count(t5.BUS_ID) REPORTNUM from T_IM_REPORT t5 where t5.DATA_TYPE=2 and t5.DATA_STATE=1 group by t5.BUS_ID ) t6 on t4.ID = t6.BUS_ID 
+			<where>
+				<!-- 查询审核中的帖子 -->
+				<if test="dataStatus !=null and dataStatus ==1">
+					and t6.REPORTNUM &lt;5
+				</if>
+				<!-- 查询被举报5次以及以上的帖子 -->
+				<if test="dataStatus !=null and dataStatus ==2">
+					and t4.`STATUS` =2  and t6.REPORTNUM &gt;=5
+				</if>
+				<if test="keyword !=null and keyword !=''">
+					and (t4.CONTENT like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') or t4.FROM_NICK_NAME like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+				</if>
+			</where>
+		) temp
+	</select>
+	
+	<!-- 查询被举报的用户 -->
+	<select id="selectReportUser" parameterType="com.jumper.angel.sociality.report.model.vo.ReportUserVO" resultMap="reportUserVOMap">
+		select 
+			t3.USER_ID,t3.GROUP_ID,t3.GROUP_NAME,t3.USER_NICK_NAME,t5.BE_REPORT_MESSAGE,t5.REPORTNUM 
+		from(
+			select 
+				t.USER_ID,t.GROUP_ID,t2.GROUP_NAME,(select t1.nick_name from user_info t1 where t1.id = t.USER_ID) as USER_NICK_NAME 
+			from T_IM_USER_GROUP t INNER JOIN T_IM_COMMUNICATION_GROUP t2 on t.GROUP_ID = t2.GROUP_ID
+			where  t.IS_DELETE=0 and t2.DATA_STATUS =1) t3 
+		INNER JOIN (
+			select t4.BUS_ID,t4.GROUP_ID,t4.BE_REPORT_MESSAGE,count(t4.BUS_ID) REPORTNUM from T_IM_REPORT t4 where t4.DATA_TYPE=3 and t4.DATA_STATE=1 group by t4.BUS_ID,t4.GROUP_ID
+		) t5
+		on t3.USER_ID = t5.BUS_ID
+		<where>
+			t3.GROUP_ID = t5.GROUP_ID
+			<!-- 查询审核中的帖子 -->
+			<if test="status !=null and status ==1">
+				and t5.REPORTNUM &lt;5
+			</if>
+			<!-- 查询被举报5次以及以上的帖子 -->
+			<if test="status !=null and status ==2">
+				and t6.REPORTNUM &gt;=5
+			</if>
+			<if test="keyword !=null and keyword !=''">
+				and (t5.BE_REPORT_MESSAGE like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') or t3.USER_NICK_NAME like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>
+		</where>
+		order by  t5.REPORTNUM desc
+		<if test="beginIndex !=null and everyPage !=null">
+			LIMIT #{beginIndex}, #{everyPage}
+		</if>
+	</select>
+	<!-- 查询统计被举报的用户 -->
+	<select id="selectCountReportUser" parameterType="com.jumper.angel.sociality.report.model.vo.ReportUserVO" resultType="java.lang.Integer">
+		select count(1) from(
+			select t3.USER_ID,t3.GROUP_ID,t3.GROUP_NAME,t3.USER_NICK_NAME,t5.BE_REPORT_MESSAGE,t5.REPORTNUM from(
+			select t.USER_ID,t.GROUP_ID,t2.GROUP_NAME,(select t1.nick_name from user_info t1 where t1.id = t.USER_ID) as USER_NICK_NAME 
+			from T_IM_USER_GROUP t INNER JOIN T_IM_COMMUNICATION_GROUP t2 on t.GROUP_ID = t2.GROUP_ID
+			where  t.IS_DELETE=0 and t2.DATA_STATUS =1
+			) t3 INNER JOIN 
+			(
+			select t4.BUS_ID,t4.GROUP_ID,t4.BE_REPORT_MESSAGE,count(t4.BUS_ID) REPORTNUM from T_IM_REPORT t4 where t4.DATA_TYPE=3 and t4.DATA_STATE=1 group by t4.BUS_ID,t4.GROUP_ID
+			) t5
+			on t3.USER_ID = t5.BUS_ID
+			<where>
+				t3.GROUP_ID = t5.GROUP_ID
+				<!-- 查询审核中的帖子 -->
+				<if test="status !=null and status ==1">
+					and t5.REPORTNUM &lt;5
+				</if>
+				<!-- 查询被举报5次以及以上的帖子 -->
+				<if test="status !=null and status ==2">
+					and t6.REPORTNUM &gt;=5
+				</if>
+				<if test="keyword !=null and keyword !=''">
+					and (t5.BE_REPORT_MESSAGE like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') or t3.USER_NICK_NAME like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+				</if>
+			</where>
+		) temp
+	</select>
+	
+	<select id="selectReportByBean" parameterType="com.jumper.angel.sociality.report.model.vo.ReportVO" resultMap="reportVOMap">
+		select t.REPORT_ID, t.BUS_ID, t.REPORT_CONTENT, t.REPORT_USER_ID,
+			   t.REPORT_TIME,t.DATA_TYPE, t.DATA_STATE,t.BE_REPORT_MESSAGE,
+			   t.GROUP_ID,t1.nick_name as USERNICKNAME 
+			   from T_IM_REPORT t INNER JOIN user_info t1 on t.REPORT_USER_ID = t1.id
+		<where>
+			<if test="busId !=null and busId !=''">
+				and BUS_ID = #{busId,jdbcType=VARCHAR}
+			</if>
+			<if test="dataType !=null and dataType !=''">
+				and DATA_TYPE =#{dataType,jdbcType=BIGINT}
+			</if>
+			<if test="groupId !=null and groupId !=''">
+				and GROUP_ID =#{groupId,jdbcType=BIGINT}
+			</if>
+			and DATA_STATE = 1
+		</where>	   
+	</select>
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.encyclopedia.mapper.HelperQuestionsMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.encyclopedia.entity.HelperQuestions" >
+  	<result column="id" property="id" jdbcType="INTEGER"/>
+  	<result column="question_type_id" property="questionTypeId" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="answer" property="answer" jdbcType="LONGVARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="details_url" property="detailsUrl" jdbcType="VARCHAR" />
+    <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
+    <result column="question_intorduction" property="questionIntorduction" jdbcType="LONGVARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, question_type_id, title, answer, status, add_time, details_url, img_url, question_intorduction
+  </sql>
+  
+  <!-- 获取孕期百科常见问题列表 -->
+  <select id="findQuestionList" resultMap="BaseResultMap" parameterType="map">
+  	select q.*,date_format(q.add_time,'%Y-%c-%d %H:%i:%s') questionAddTime, t.`name` questionTypeName ,t.parent_id classId
+  		from helper_questions q,helper_question_type t where q.question_type_id=t.id
+  		<if test="typeId != 0">
+  			and question_type_id=#{typeId}
+  		</if>
+  		<if test="typeId == 0 and classId !=0">
+  			and question_type_id in (select id from helper_question_type where parent_id=#{classId})
+  		</if>
+  		<if test="keywords != null and keywords != ''">
+  			and instr(q.title,#{keywords})
+  		</if>
+  		order by q.add_time desc limit #{beginIndex},#{everyPage}
+  </select>
+  
+  <!-- 删除模块对应的标签所对应的文章 -->
+  <delete id="deleteQuestionByClassId" parameterType="int">
+  	delete from helper_questions where question_type_id in (select id from helper_question_type where parent_id=#{classId})
+  </delete>
+  
+  <!-- 删除标签下对应的文章 -->
+  <delete id="deleteQuestionById" parameterType="int">
+  	delete from helper_questions where question_type_id=#{typeId}
+  </delete>
+  
+  <!-- 条件获取常见问题总记录数  -->
+  <select id="findCount" parameterType="map" resultType="int">
+  	select count(*) from helper_questions where 1=1
+  	<if test="typeId != 0">
+  		and question_type_id=#{typeId}
+  	</if>
+  	<if test="typeId == 0 and classId !=0">
+  		and question_type_id in (select id from helper_question_type where parent_id=#{classId})
+  	</if>
+  	<if test="keywords != null and keywords != ''">
+  		and instr(title,#{keywords})
+  	</if>
+  </select>
+  
+  <!-- 删除常见问题 -->
+  <delete id="deleteQuestionClass" parameterType="int">
+  	delete from helper_questions where id=#{questionId}
+  </delete>
+  
+  <!-- 添加百科内容 -->
+  <insert id="addQuestion" parameterType="com.jumper.angel.home.encyclopedia.entity.HelperQuestions" 
+  	flushCache="true" keyColumn="GENERATED_KEY" keyProperty="id" useGeneratedKeys="true">
+  		insert into helper_questions(question_type_id, title, answer, status, add_time, details_url, img_url, question_intorduction, url)
+  			values(#{questionTypeId}, #{title}, #{answer}, #{status}, #{addTime}, #{detailsUrl}, #{imgUrl}, #{questionIntorduction}, #{url})
+  	</insert>
+  	
+  	<!-- 修改百科内容 -->
+  	<update id="updateQuestion" parameterType="com.jumper.angel.home.encyclopedia.entity.HelperQuestions">
+  		update helper_questions set status=#{status}
+  		<if test="questionTypeId != null and questionTypeId != 0">
+  			,question_type_id= #{questionTypeId}
+  		</if>
+  		<if test="title != null and title != ''">
+  			,title=#{title}
+  		</if>
+  		<if test="answer != null and answer != ''">
+  			,answer=#{answer}
+  		</if>
+  		<if test="detailsUrl != null and detailsUrl != ''">
+  			,details_url=#{detailsUrl}
+  		</if>
+  		<if test="imgUrl != null and imgUrl != ''">
+  			,img_url=#{imgUrl}
+  		</if>
+  		<if test="questionIntorduction != null and questionIntorduction != ''">
+  			,question_intorduction=#{questionIntorduction}
+  		</if>
+  		<if test="url != null and url != ''">
+  			,url=#{url}
+  		</if>
+  		where id=#{id}
+  	</update>
+  
+</mapper>

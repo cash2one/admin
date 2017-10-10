@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.hospital.hospital.mapper.HospitalServiceListMapper">
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.hospital.entity.HospitalServiceList">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_date" jdbcType="BIGINT" property="createdDate" />
+    <result column="hospital_id" jdbcType="INTEGER" property="hospitalId" />
+    <result column="module_id" jdbcType="INTEGER" property="moduleId" />
+    <result column="comment" jdbcType="VARCHAR" property="comment" />
+    <result column="function_group" jdbcType="INTEGER" property="functionGroup" />
+    <result column="closed" jdbcType="INTEGER" property="closed" />
+    <result column="postion_order" jdbcType="INTEGER" property="postionOrder" />
+    <result column="entry_stat" jdbcType="INTEGER" property="entryStat" />
+    <result column="default_url" jdbcType="VARCHAR" property="defaultUrl" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="native_app" jdbcType="INTEGER" property="nativeApp" />
+    <result column="url_stat" jdbcType="INTEGER" property="urlStat" />
+    <result column="icon_img" jdbcType="VARCHAR" property="iconImg" />
+  </resultMap>
+  <resultMap type="com.jumper.angel.hospital.hospital.entity.HospitalServiceList" id="MultiResultMap" extends="BaseResultMap">
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="disabled" jdbcType="INTEGER" property="disabled" />
+    <result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_date, hospital_id, module_id, comment, function_group, closed, postion_order, 
+    entry_stat, default_url, url, native_app,icon_img,url_stat
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_service_list
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_service_list
+    where module_id = #{id,jdbcType=INTEGER} and hospital_id = #{hospitalId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 总记录数 -->
+  <select id="findCount" parameterType="java.lang.Integer" resultType="int">
+  	select count(id) from hospital_service_list where hospital_id = #{hospitalId} and function_group = #{functionGroup}
+  </select>
+  <!-- 院内功能总记录数 -->
+  <select id="findCount2" parameterType="java.lang.Integer" resultType="int">
+  	select count(id) from hospital_service_list where hospital_id = #{hospitalId} and function_group in (2,3)
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from hospital_service_list
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByHospitalId" parameterType="java.lang.Integer">
+    delete from hospital_service_list
+    where hospital_id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalServiceList">
+    insert into hospital_service_list (id, created_date, hospital_id, 
+      module_id, comment, function_group, 
+      closed, postion_order, entry_stat, 
+      default_url, url, native_app,icon_img,url_stat
+      )
+    values (#{id,jdbcType=INTEGER}, #{createdDate,jdbcType=BIGINT}, #{hospitalId,jdbcType=INTEGER}, 
+      #{moduleId,jdbcType=INTEGER}, #{comment,jdbcType=VARCHAR}, #{functionGroup,jdbcType=INTEGER}, 
+      #{closed,jdbcType=INTEGER}, #{postionOrder,jdbcType=INTEGER}, #{entryStat,jdbcType=INTEGER}, 
+      #{defaultUrl,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{nativeApp,jdbcType=INTEGER}, 
+      #{iconImg,jdbcType=VARCHAR}, #{urlStat,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalServiceList">
+    insert into hospital_service_list
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">            id,      </if>
+      <if test="createdDate != null">   created_date,      </if>
+      <if test="hospitalId != null">    hospital_id,      </if>
+      <if test="moduleId != null">      module_id,      </if>
+      <if test="comment != null">       comment,      </if>
+      <if test="functionGroup != null"> function_group,      </if>
+      <if test="closed != null">        closed,      </if>
+      <if test="postionOrder != null">  postion_order,      </if>
+      <if test="entryStat != null">     entry_stat,      </if>
+      <if test="defaultUrl != null">    default_url,      </if>
+      <if test="url != null">           url,      </if>
+      <if test="nativeApp != null">     native_app,      </if>
+      <if test="iconImg != null">       icon_img,      </if>
+      <if test="urlStat != null">       url_stat,      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">            #{id,jdbcType=INTEGER},      </if>
+      <if test="createdDate != null">   #{createdDate,jdbcType=BIGINT},      </if>
+      <if test="hospitalId != null">    #{hospitalId,jdbcType=INTEGER},      </if>
+      <if test="moduleId != null">      #{moduleId,jdbcType=INTEGER},      </if>
+      <if test="comment != null">       #{comment,jdbcType=VARCHAR},      </if>
+      <if test="functionGroup != null"> #{functionGroup,jdbcType=INTEGER},      </if>
+      <if test="closed != null">        #{closed,jdbcType=INTEGER},      </if>
+      <if test="postionOrder != null">  #{postionOrder,jdbcType=INTEGER},      </if>
+      <if test="entryStat != null">     #{entryStat,jdbcType=INTEGER},      </if>
+      <if test="defaultUrl != null">    #{defaultUrl,jdbcType=VARCHAR},      </if>
+      <if test="url != null">           #{url,jdbcType=VARCHAR},      </if>
+      <if test="nativeApp != null">     #{nativeApp,jdbcType=INTEGER},      </if>
+      <if test="iconImg != null">       #{iconImg,jdbcType=VARCHAR},      </if>
+      <if test="urlStat != null">     	#{urlStat,jdbcType=INTEGER},      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalServiceList">
+    update hospital_service_list
+    <set>
+      <if test="createdDate != null">   created_date = #{createdDate,jdbcType=BIGINT},      </if>
+      <if test="hospitalId != null">    hospital_id = #{hospitalId,jdbcType=INTEGER},      </if>
+      <if test="moduleId != null">      module_id = #{moduleId,jdbcType=INTEGER},      </if>
+      <if test="comment != null">       comment = #{comment,jdbcType=VARCHAR},      </if>
+      <if test="functionGroup != null"> function_group = #{functionGroup,jdbcType=INTEGER},      </if>
+      <if test="closed != null">        closed = #{closed,jdbcType=INTEGER},      </if>
+      <if test="postionOrder != null">  postion_order = #{postionOrder,jdbcType=INTEGER},      </if>
+      <if test="entryStat != null">     entry_stat = #{entryStat,jdbcType=INTEGER},      </if>
+      <if test="defaultUrl != null">    default_url = #{defaultUrl,jdbcType=VARCHAR},      </if>
+      <if test="url != null">           url = #{url,jdbcType=VARCHAR},      </if>
+      <if test="nativeApp != null">     native_app = #{nativeApp,jdbcType=INTEGER},      </if>
+      <if test="iconImg != null">       icon_img = #{iconImg,jdbcType=VARCHAR},      </if>
+      <if test="urlStat != null">       url_stat = #{urlStat,jdbcType=INTEGER},      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalServiceList">
+    update hospital_service_list
+    set created_date = #{createdDate,jdbcType=BIGINT},
+      hospital_id = #{hospitalId,jdbcType=INTEGER},
+      module_id = #{moduleId,jdbcType=INTEGER},
+      comment = #{comment,jdbcType=VARCHAR},
+      function_group = #{functionGroup,jdbcType=INTEGER},
+      closed = #{closed,jdbcType=INTEGER},
+      postion_order = #{postionOrder,jdbcType=INTEGER},
+      entry_stat = #{entryStat,jdbcType=INTEGER},
+      default_url = #{defaultUrl,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      native_app = #{nativeApp,jdbcType=INTEGER},
+      icon_img = #{iconImg,jdbcType=VARCHAR},
+      url_stat = #{urlStat,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询医院基础功能 -->
+  <select id="queryBasicFunction" parameterType="java.lang.Integer" resultMap="MultiResultMap">
+  	select 
+  	 hsl.*,hsm.`title`,hsm.`disabled`,hsm.`img_url`
+    from `hospital_service_list` hsl
+    left join `hospital_service_module` hsm on hsl.`module_id` = hsm.`id`
+    where hsl.`hospital_id` = #{hospitalId} and hsl.`function_group` = 0
+    limit #{pageIndex},#{everyPage}
+  </select>
+  
+  <!-- 查询医院平台功能 -->
+  <select id="queryPlatformFunction" parameterType="java.lang.Integer" resultMap="MultiResultMap">
+  	select 
+  	 hsl.*,hsm.`title`,hsm.`disabled`,hsm.`img_url`
+    from `hospital_service_list` hsl
+    left join `hospital_service_module` hsm on hsl.`module_id` = hsm.`id`
+    where hsl.`hospital_id` = #{hospitalId} and hsl.`function_group` = 1
+    limit #{pageIndex},#{everyPage}
+  </select>
+  
+  <!-- 查询医院院内功能 -->
+  <select id="queryHospitalFunction" parameterType="java.lang.Integer" resultMap="MultiResultMap">
+  	select 
+  	 hsl.*,hsm.`title`,hsm.`disabled`,hsm.`img_url`
+    from `hospital_service_list` hsl
+    left join `hospital_service_module` hsm on hsl.`module_id` = hsm.`id`
+    where hsl.`hospital_id` = #{hospitalId} and hsl.`function_group` in (2,3)
+    limit #{pageIndex},#{everyPage}
+  </select>
+  
+  <!-- 获取排序列表 -->
+  <select id="getRankList" parameterType="java.lang.Integer" resultMap="MultiResultMap">
+  	select 
+  	 hsl.*,hsm.`title`,hsm.`disabled`,hsm.`img_url`
+    from `hospital_service_list` hsl
+    left join `hospital_service_module` hsm on hsl.`module_id` = hsm.`id`
+    where hsl.`hospital_id` = #{hospitalId} and hsl.`function_group` in (1,2,3) and hsl.`entry_stat` = 0
+    ORDER BY hsl.`postion_order`
+  </select>
+  
+  <!-- 获取医院信息 -->
+  <select id="getHospitalInformation" parameterType="java.lang.Integer" resultType="java.util.Map">
+  	select 
+   		hi.id as hospitalId,hi.`name`,count(hsl.id) as countNum,(select count(id) from hospital_service_list where entry_stat = 1 and hospital_id = #{hospitalId}) as concealNum
+    from hospital_service_list hsl
+    left join hospital_info hi on hsl.`hospital_id` = hi.`id`
+    where hsl.hospital_id = #{hospitalId}
+  </select>
+  
+  <!-- 修改医院服务入口状态 -->
+  <update id="updateHospitalServiceEntryStat" >
+    update hospital_service_list
+    set 
+      postion_order = #{postionOrder,jdbcType=INTEGER},
+      entry_stat = #{entryStat,jdbcType=INTEGER}
+    where hospital_id = #{hospitalId,jdbcType=INTEGER} and  module_id = #{moduleId,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询该服务信息 -->
+  <select id="getHospitalServiceListByModuleId" resultMap="MultiResultMap">
+  	select 
+  	 hsl.*,hsm.`title`,hsm.`disabled`,hsm.`img_url`
+    from `hospital_service_list` hsl
+    left join `hospital_service_module` hsm on hsl.`module_id` = hsm.`id`
+    where hsl.`hospital_id` = #{hospitalId} and hsl.`module_id` = #{moduleId}
+  </select>
+  
+  <!-- 修改医院服务链接状态 -->
+  <update id="updateHospitalServiceUrlStat" >
+    update hospital_service_list
+    set 
+      <if test="url != null">url = #{url,jdbcType=VARCHAR},</if>
+      url_stat = #{urlStat,jdbcType=INTEGER}
+    where hospital_id = #{hospitalId,jdbcType=INTEGER} and  module_id = #{moduleId,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 获取排序最大值 -->
+  <select id="getMaxPostionOrder" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+  	SELECT MAX(postion_order) FROM `hospital_service_list` WHERE hospital_id = #{hospitalId} AND entry_stat = 0
+  </select>
+</mapper>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.sociality.recycle.mapper.RecycleMapper" >
+  
+  <!-- 帖子 -->
+  <resultMap id="debatepostVOMap" type="com.jumper.angel.sociality.debatepost.model.vo.DebatepostVO">
+		<id column="DEBATEPOST_ID" property="debatepostId" jdbcType="BIGINT" />
+		<result column="TOPIC_ID" property="topicId" jdbcType="BIGINT" />
+		<result column="TOPIC_NAME" property="topicName" jdbcType="VARCHAR" />
+		<result column="DEBATEPOST_TITLE" property="debatepostTitle" jdbcType="VARCHAR" />
+		<result column="DEBATEPOST_CONTENT" property="debatepostContent" jdbcType="VARCHAR" />
+		<result column="DEBATEPOST_USER_ID" property="debatepostUserId" jdbcType="VARCHAR" />
+		<result column="WHETHER_POPULAR" property="whetherPopular" jdbcType="INTEGER" />
+		<result column="IMG" property="img" jdbcType="VARCHAR" />
+		<result column="POINT_PRAISE" property="pointPraise" jdbcType="INTEGER" />
+		<result column="COMMENT_NUMBER" property="commentNumber" jdbcType="INTEGER" />
+		<result column="READ_NUMBER" property="readNumber" jdbcType="INTEGER" />
+		<result column="CREATE_TIME" property="debatepostDateTime" jdbcType="VARCHAR" />
+		<result column="DELETE_TIME" property="deletedTime" jdbcType="VARCHAR" />
+		<result column="REPORT_COUNT" property="reportCount" jdbcType="INTEGER" />
+		<result column="NUMBER_REPORTS" property="numberReports" jdbcType="INTEGER" />
+		<result column="IS_DELETE" property="isDelete" jdbcType="INTEGER" />
+		<result column="NICK_NAME" property="nickName" jdbcType="VARCHAR" />
+		<result column="RECORD_USER_NAME" property="deletedAdmin" jdbcType="VARCHAR" />
+	</resultMap>
+  
+    <!-- 根据用户昵称或者话题标题查询删除的帖子列表 -->
+  	<select id="getDeletedDebatepost" parameterType="com.jumper.angel.sociality.debatepost.model.vo.DebatepostVO" resultMap="debatepostVOMap">
+  		SELECT s.DEBATEPOST_ID,s.TOPIC_ID,s.DEBATEPOST_TITLE,s.COMMENT_NUMBER,s.POINT_PRAISE,s.READ_NUMBER,s.DEBATEPOST_USER_ID,s.NICK_NAME, 
+  		s.CREATE_TIME,FROM_UNIXTIME(r.RECORD_TIME/1000,'%Y/%m/%d %H:%i:%s')AS DELETE_TIME,r.RECORD_USER_NAME FROM (
+		SELECT DEBATEPOST_ID,TOPIC_ID,DEBATEPOST_TITLE,COMMENT_NUMBER,POINT_PRAISE,READ_NUMBER,DEBATEPOST_USER_ID,u.nick_name, 
+		FROM_UNIXTIME(CREATE_TIME/1000,'%Y/%m/%d %H:%i:%s')AS CREATE_TIME 
+		FROM T_IM_DEBATEPOST d 
+		INNER JOIN user_info u 
+		ON d.DEBATEPOST_USER_ID=u.id
+		<where>
+			d.IS_DELETE=2 
+			<if test="keyword !=null and keyword !=''">
+			and (d.DEBATEPOST_TITLE LIKE CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') 
+			or u.nick_name like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>
+		</where>
+		)AS s 
+		LEFT JOIN T_IM_OPERATION_RECORD r 
+		ON s.DEBATEPOST_ID=r.DEBATEPOST_ID 
+		WHERE r.RECORD_TYPE=9 AND FROM_UNIXTIME(r.RECORD_TIME/1000,'%Y/%m/%d %H:%i:%s')>= DATE_SUB(NOW(),INTERVAL 3 MONTH) 
+		order by s.CREATE_TIME desc limit #{beginIndex}, #{everyPage}
+  	</select>
+  	
+  	<!-- 根据用户昵称或者话题标题查询删除的帖子数量 -->
+  	<select id="countDeletedDebatepost" parameterType="com.jumper.angel.sociality.debatepost.model.vo.DebatepostVO" resultType="java.lang.Integer">
+  		SELECT COUNT(1) FROM (
+  		SELECT s.DEBATEPOST_ID,s.TOPIC_ID,s.DEBATEPOST_TITLE,s.COMMENT_NUMBER,s.POINT_PRAISE,s.READ_NUMBER,s.DEBATEPOST_USER_ID,s.NICK_NAME, 
+  		s.CREATE_TIME, FROM_UNIXTIME(r.RECORD_TIME/1000,'%Y/%m/%d %H:%i:%s')AS DELETE_TIME,r.RECORD_USER_NAME FROM (
+		SELECT DEBATEPOST_ID,TOPIC_ID,DEBATEPOST_TITLE,COMMENT_NUMBER,POINT_PRAISE,READ_NUMBER,DEBATEPOST_USER_ID,u.nick_name, 
+		FROM_UNIXTIME(CREATE_TIME/1000,'%Y/%m/%d %H:%i:%s')AS CREATE_TIME 
+		FROM T_IM_DEBATEPOST d 
+		INNER JOIN user_info u 
+		ON d.DEBATEPOST_USER_ID=u.id
+		<where>
+			d.IS_DELETE=2 
+			<if test="keyword !=null and keyword !=''">
+			and (d.DEBATEPOST_TITLE LIKE CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') 
+			or u.nick_name like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>
+		</where>
+		)AS s 
+		LEFT JOIN T_IM_OPERATION_RECORD r 
+		ON s.DEBATEPOST_ID=r.DEBATEPOST_ID 
+		WHERE r.RECORD_TYPE=9 AND FROM_UNIXTIME(r.RECORD_TIME/1000,'%Y/%m/%d %H:%i:%s')>= DATE_SUB(NOW(),INTERVAL 3 MONTH)
+		) AS a 
+  	</select>
+  	
+  	<!-- 评论 -->
+  	<resultMap id="commenOnMap" type="com.jumper.angel.sociality.comment.model.vo.CommentOnVO" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <id column="FID" property="fid" jdbcType="BIGINT" />
+    <result column="DEBATEPOST_ID" property="debatepostId" jdbcType="BIGINT" />
+    <result column="FROM_USER_ID" property="fromUserId" jdbcType="VARCHAR" />
+    <result column="TO_USER_ID" property="toUserId" jdbcType="VARCHAR" />
+    <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+    <result column="MESSAGETYPE" property="messageType" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="INTEGER" />
+    <result column="GRADE" property="grade" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    
+    <result column="FROM_NICK_NAME" property="fromNickName" jdbcType="VARCHAR" />
+    <result column="FROM_USER_IMG" property="fromUserImg" jdbcType="VARCHAR" />
+    <result column="TO_NICK_NAME" property="toNickName" jdbcType="VARCHAR" />
+    <result column="TO_USER_IMG" property="toUserImg" jdbcType="VARCHAR" />
+    <result column="DEBATEPOST_TITLE" property="debatepostTitle" jdbcType="VARCHAR"/>
+    <result column="RECORD_TIME" property="strDateTime" jdbcType="VARCHAR"/>
+    <result column="DELETE_TIME" property="deletedTime" jdbcType="VARCHAR"/>
+    <result column="RECORD_USER_NAME" property="deleteAdmin" jdbcType="VARCHAR"/>
+  	</resultMap>
+  	
+  	<!--根据评论内容和用户昵称查询删除的评论  -->
+  	<select id="getDeletedComment" parameterType="com.jumper.angel.sociality.comment.model.po.CommentOnPO" resultMap="commenOnMap">
+  		SELECT b.ID,b.DEBATEPOST_ID,b.FROM_USER_ID,b.FROM_NICK_NAME,b.CONTENT,b.TO_NICK_NAME,b.DEBATEPOST_TITLE,b.RECORD_TIME,
+  		FROM_UNIXTIME(r.RECORD_TIME/1000,'%Y/%m/%d %H:%i:%s')AS DELETE_TIME,r.RECORD_USER_NAME FROM (
+		SELECT a.ID,a.DEBATEPOST_ID,a.FROM_USER_ID,a.FROM_NICK_NAME,a.CONTENT,a.TO_NICK_NAME,d.DEBATEPOST_TITLE,a.RECORD_TIME FROM(
+		SELECT c.ID,c.DEBATEPOST_ID,c.FROM_USER_ID,u.nick_name AS FROM_NICK_NAME,(SELECT u1.nick_name FROM user_info u1 WHERE u1.id=c.TO_USER_ID) AS TO_NICK_NAME,
+		c.CONTENT,date_format(c.CREATE_TIME,'%Y/%m/%d %H:%i:%s') AS RECORD_TIME 
+		FROM T_IM_COMMENT_ON c INNER JOIN user_info u ON c.FROM_USER_ID=u.id
+		<where>
+			c.STATUS=3 
+			<if test="keyword !=null and keyword !=''">
+			and (c.CONTENT LIKE CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') 
+			or u.nick_name like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>
+		</where>
+		) AS a LEFT JOIN T_IM_DEBATEPOST d 
+		ON a.DEBATEPOST_ID=d.DEBATEPOST_ID
+		) AS b LEFT JOIN T_IM_OPERATION_RECORD  r ON b.ID=r.COMMENT_ID 
+		WHERE r.RECORD_TYPE=14 AND FROM_UNIXTIME(r.RECORD_TIME/1000,'%Y/%m/%d %H:%i:%s')>= DATE_SUB(NOW(),INTERVAL 3 MONTH) 
+		ORDER BY r.RECORD_TIME  DESC LIMIT #{beginIndex}, #{everyPage}
+  	</select>
+  	
+  	<!--根据评论内容和用户昵称查询删除的评论数量  -->
+  	<select id="countDeletedComment" parameterType="com.jumper.angel.sociality.comment.model.vo.CommentOnVO" resultType="java.lang.Integer">
+  		SELECT COUNT(1) FROM(
+  		SELECT b.ID,b.DEBATEPOST_ID,b.FROM_USER_ID,b.FROM_NICK_NAME,b.CONTENT,b.TO_NICK_NAME,b.DEBATEPOST_TITLE,b.RECORD_TIME,
+  		FROM_UNIXTIME(r.RECORD_TIME/1000,'%Y/%m/%d %H:%i:%s')AS DELETE_TIME,r.RECORD_USER_NAME FROM (
+		SELECT a.ID,a.DEBATEPOST_ID,a.FROM_USER_ID,a.FROM_NICK_NAME,a.CONTENT,a.TO_NICK_NAME,d.DEBATEPOST_TITLE,a.RECORD_TIME FROM(
+		SELECT c.ID,c.DEBATEPOST_ID,c.FROM_USER_ID,u.nick_name AS FROM_NICK_NAME,(SELECT u1.nick_name FROM user_info u1 WHERE u1.id=c.TO_USER_ID) AS TO_NICK_NAME,
+		c.CONTENT,date_format(c.CREATE_TIME,'%Y/%m/%d %H:%i:%s') AS RECORD_TIME 
+		FROM T_IM_COMMENT_ON c INNER JOIN user_info u ON c.FROM_USER_ID=u.id
+		<where>
+			c.STATUS=3 
+			<if test="keyword !=null and keyword !=''">
+			and (c.CONTENT LIKE CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') 
+			or u.nick_name like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>
+		</where>
+		) AS a LEFT JOIN T_IM_DEBATEPOST d 
+		ON a.DEBATEPOST_ID=d.DEBATEPOST_ID
+		) AS b LEFT JOIN T_IM_OPERATION_RECORD  r ON b.ID=r.COMMENT_ID 
+		WHERE r.RECORD_TYPE=14 AND FROM_UNIXTIME(r.RECORD_TIME/1000,'%Y/%m/%d %H:%i:%s')>= DATE_SUB(NOW(),INTERVAL 3 MONTH)
+		) AS c
+  	</select>
+</mapper>

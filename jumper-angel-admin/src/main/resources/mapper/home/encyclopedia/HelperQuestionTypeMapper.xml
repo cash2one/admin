@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.encyclopedia.mapper.HelperQuestionTypeMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.encyclopedia.entity.HelperQuestionType" >
+  	<result column="id" property="id" jdbcType="INTEGER"/>
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+    <result column="is_visible" property="isVisible" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, name, image_url, is_visible, add_time, parent_id
+  </sql>
+  
+  <!-- 通过父类型id获取子类型列表 -->
+  <select id="findQuestionTypeByQuestionClassId" resultMap="BaseResultMap" parameterType="Integer">
+  	select
+  		<include refid="Base_Column_List"></include> 
+  	 from helper_question_type where parent_id=#{value} and is_visible=0 order by add_time desc
+  </select>
+  
+  <!-- 条件获取常见问题标签数  -->
+  <select id="findCount" parameterType="map" resultType="int">
+  	select count(*) from helper_question_type where 1=1
+  		<if test="classId != 0">
+  			and parent_id=#{classId}
+  		</if>
+  		<if test="keywords != null and keywords != ''">
+  			and instr(name,#{keywords})
+  		</if>
+  </select>
+  
+  <!-- 条件查询标签列表 -->
+  <select id="findQuestionTypeList" parameterType="map" resultMap="BaseResultMap">
+  	select t.*, c.name className,date_format(t.add_time,'%Y-%c-%d %H:%i:%s') typeAddTime 
+  		from helper_question_type t,helper_question_class c where t.parent_id=c.id
+  		<if test="classId != 0">
+  			and parent_id=#{classId}
+  		</if>
+  		<if test="keywords != null and keywords != ''">
+  			and instr(t.name,#{keywords})
+  		</if>
+  		order by t.add_time desc limit #{beginIndex},#{everyPage}	
+  </select>
+  
+  <!-- 删除模块对应的标签 -->
+  <delete id="deleteQuestionTypeByClassId" parameterType="int">
+  	delete from helper_question_type where parent_id=#{classId}
+  </delete>
+  
+  <!-- 删除标签 -->
+  <delete id="deleteQuestionTypeById" parameterType="int">
+  	delete from helper_question_type where id=#{typeId}
+  </delete>
+  
+  <!-- 通过标签名查询标签信息 -->
+  <select id="findQuestionTypeByName" parameterType="com.jumper.angel.home.encyclopedia.entity.HelperQuestionType" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"></include>
+  		from helper_question_type where name=#{name} and id!=#{id} and parent_id=#{parentId}
+  </select>
+  
+  <!-- 添加标签信息 -->
+  <insert id="addQuestionType" parameterType="com.jumper.angel.home.encyclopedia.entity.HelperQuestionType" flushCache="true"
+   keyColumn="GENERATED_KEY" keyProperty="id" useGeneratedKeys="true">
+  	insert into helper_question_type(name, is_visible, add_time, parent_id) values(#{name},#{isVisible},#{addTime},#{parentId})
+  </insert>
+  
+  <!-- 修改标签信息 -->
+  <update id="updateQuestionType" parameterType="com.jumper.angel.home.encyclopedia.entity.HelperQuestionType">
+  	update helper_question_type set is_visible=#{isVisible},parent_id=#{parentId}
+  		<if test="name != null and name != ''">
+  			,name=#{name}
+  		</if>
+  		where id=#{id}
+  </update>
+  
+  
+  <!-- 获取所有的标签列表 -->
+  <select id="findAllQuestionType" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"></include>
+  		from helper_question_type where is_visible=0 order by add_time desc
+  </select>
+  
+</mapper>

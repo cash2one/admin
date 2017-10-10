@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.sociality.operationrecord.mapper.OperationRecordMapper" >
+  <resultMap id="operationRecordVOMap" type="com.jumper.angel.sociality.operationrecord.model.vo.OperationRecordVO" >
+    <id column="RECORD_ID" property="recordId" jdbcType="BIGINT" />
+    <result column="RECORD_CONTENT" property="recordContent" jdbcType="VARCHAR" />
+    <result column="RECORD_TYPE" property="recordType" jdbcType="BIGINT" />
+    <result column="RECORD_TIME" property="recordTime" jdbcType="BIGINT" />
+    <result column="RECORD_USER_ID" property="recordUserId" jdbcType="VARCHAR" />
+    <result column="RECORD_USER_NAME" property="recordUserName" jdbcType="VARCHAR" />
+    <result column="DEBATEPOST_ID" property="debatepostId" jdbcType="BIGINT" />
+    <result column="TOPIC_ID" property="topicId" jdbcType="BIGINT" />
+    <result column="COMMENT_ID" property="commentId" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+	RECORD_ID, RECORD_CONTENT, RECORD_TYPE, RECORD_TIME, RECORD_USER_ID,RECORD_USER_NAME,DEBATEPOST_ID,TOPIC_ID,COMMENT_ID
+  </sql>
+  
+  <insert id="insert" parameterType="com.jumper.angel.sociality.operationrecord.model.po.OperationRecordPO">
+		insert into T_IM_OPERATION_RECORD (RECORD_CONTENT, RECORD_TYPE, RECORD_TIME,RECORD_USER_ID,
+		RECORD_USER_NAME,DEBATEPOST_ID,TOPIC_ID,COMMENT_ID)
+		values (#{recordContent,jdbcType=VARCHAR}, #{recordType,jdbcType=BIGINT},#{recordTime,jdbcType=BIGINT},
+		#{recordUserId,jdbcType=VARCHAR}, #{recordUserName,jdbcType=VARCHAR}, #{debatepostId,jdbcType=VARCHAR}, 
+		#{topicId,jdbcType=VARCHAR}, #{commentId,jdbcType=VARCHAR})
+		<selectKey resultType="long" order="AFTER" keyProperty="recordId">
+			SELECT LAST_INSERT_ID() AS RECORD_ID
+		</selectKey>
+  </insert>
+  
+  <delete id="deleteById" parameterType="java.lang.Long">
+  	delete from T_IM_OPERATION_RECORD where RECORD_ID = #{recordId,jdbcType=BIGINT}
+  </delete>
+  
+   <select id="select" resultMap="operationRecordVOMap" parameterType="com.jumper.angel.sociality.operationrecord.model.vo.OperationRecordVO">
+	select
+		<include refid="Base_Column_List" />
+		from T_IM_OPERATION_RECORD where 1=1 
+		<if test="recordContent != null">
+			AND RECORD_CONTENT like CONCAT('%',#{recordContent,jdbcType=VARCHAR},'%') 
+		</if>
+   </select>
+   
+   <!-- 根据用户ID查询用户 -->
+   <select id="seleclUserInfoById" parameterType="java.lang.Integer" resultType="java.util.Map">
+   		select 
+   		id, mobile, email, nick_name, country, province, city, user_img,
+		expected_date_of_confinement,
+		status, reg_time, password, is_switch_push_msg, open_id, user_type, gold,
+		pregnant_stage,
+		pregnant_week, sina_open_id, qq_open_id, weixin_open_id, medical_num
+		from user_info where id = #{id,jdbcType=INTEGER}
+   </select>
+   
+   <insert id="addEntityBatch" parameterType="java.util.List" >
+   		INSERT INTO T_IM_OPERATION_RECORD 
+   		(RECORD_CONTENT,RECORD_TYPE,RECORD_TIME,RECORD_USER_ID,RECORD_USER_NAME,DEBATEPOST_ID,TOPIC_ID,COMMENT_ID) VALUES 
+		<foreach collection="list" item="it" index="index" separator=",">
+			(#{it.recordContent},#{it.recordType},#{it.recordTime},#{it.recordUserId},#{it.recordUserName},
+			#{it.debatepostId},#{it.topicId},#{it.commentId})
+		</foreach>
+   </insert>
+</mapper>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.sociality.debatepost.mapper.DebatepostMapper">
+	<resultMap id="debatepostVOMap" type="com.jumper.angel.sociality.debatepost.model.vo.DebatepostVO">
+		<id column="DEBATEPOST_ID" property="debatepostId" jdbcType="BIGINT" />
+		<result column="TOPIC_ID" property="topicId" jdbcType="BIGINT" />
+		<result column="TOPIC_NAME" property="topicName" jdbcType="VARCHAR" />
+		<result column="DEBATEPOST_TITLE" property="debatepostTitle" jdbcType="VARCHAR" />
+		<result column="DEBATEPOST_CONTENT" property="debatepostContent" jdbcType="VARCHAR" />
+		<result column="DEBATEPOST_USER_ID" property="debatepostUserId" jdbcType="VARCHAR" />
+		<result column="WHETHER_POPULAR" property="whetherPopular" jdbcType="INTEGER" />
+		<result column="IMG" property="img" jdbcType="VARCHAR" />
+		<result column="POINT_PRAISE" property="pointPraise" jdbcType="INTEGER" />
+		<result column="COMMENT_NUMBER" property="commentNumber" jdbcType="INTEGER" />
+		<result column="READ_NUMBER" property="readNumber" jdbcType="INTEGER" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+		<result column="REPORT_COUNT" property="reportCount" jdbcType="INTEGER" />
+		<result column="NUMBER_REPORTS" property="numberReports" jdbcType="INTEGER" />
+		<result column="IS_DELETE" property="isDelete" jdbcType="INTEGER" />
+		<result column="Nick_Name" property="nickName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		DEBATEPOST_ID, TOPIC_ID, DEBATEPOST_TITLE, DEBATEPOST_CONTENT, DEBATEPOST_USER_ID,
+		WHETHER_POPULAR, IMG, POINT_PRAISE, COMMENT_NUMBER,READ_NUMBER,CREATE_TIME,
+		REPORT_COUNT, NUMBER_REPORTS,
+		IS_DELETE
+	</sql>
+	
+	<update id="update" parameterType="com.jumper.angel.sociality.debatepost.model.po.DebatepostPO">
+		update 	T_IM_DEBATEPOST
+		<set>
+			<if test="debatepostTitle !=null and debatepostTitle !=''">
+				DEBATEPOST_TITLE = #{debatepostTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="debatepostContent !=null and debatepostContent !=''">
+				DEBATEPOST_CONTENT = #{debatepostContent,jdbcType=VARCHAR},
+			</if>
+			<if test="whetherPopular !=null and whetherPopular >=0">
+				WHETHER_POPULAR = #{whetherPopular,jdbcType=INTEGER},
+			</if>
+			<if test="img !=null and img !=''">
+				IMG = #{img,jdbcType=VARCHAR},
+			</if>
+			<if test="pointPraise !=null and pointPraise >0">
+				POINT_PRAISE = #{pointPraise,jdbcType=INTEGER},
+			</if>
+			<if test="commentNumber !=null and commentNumber >=0">
+				COMMENT_NUMBER = #{commentNumber,jdbcType=INTEGER},
+			</if>
+			<if test="readNumber !=null and readNumber >0">
+				READ_NUMBER = #{readNumber,jdbcType=INTEGER},
+			</if>
+			<if test="reportCount !=null and reportCount >0">
+				REPORT_COUNT = #{reportCount,jdbcType=INTEGER},
+			</if>
+			<if test="numberReports !=null and numberReports >0">
+				NUMBER_REPORTS = #{numberReports,jdbcType=INTEGER},
+			</if>
+			<if test="isDelete !=null and isDelete >=0">
+				IS_DELETE = #{isDelete,jdbcType=INTEGER},
+			</if>
+		</set>
+		where DEBATEPOST_ID = #{debatepostId,jdbcType=BIGINT}
+	</update>
+	
+	
+	<select id="selectById" parameterType="java.lang.Long" resultMap = "debatepostVOMap">
+		select <include refid="Base_Column_List" /> from T_IM_DEBATEPOST where DEBATEPOST_ID = #{debatepostId,jdbcType=BIGINT}
+	</select>
+	
+	<select id="selDebatepostInfo" parameterType="com.jumper.angel.sociality.debatepost.model.vo.DebatepostVO" resultMap = "debatepostVOMap">
+		SELECT <include refid="Base_Column_List" /> from T_IM_DEBATEPOST WHERE 
+		DEBATEPOST_USER_ID = #{debatepostUserId,jdbcType=VARCHAR} 
+		and TOPIC_ID = #{topicId,jdbcType=BIGINT} and IS_DELETE !=2 ORDER BY CREATE_TIME DESC LIMIT 1
+	</select>
+	
+	<select id="selectDebatepostByPageBean" parameterType="com.jumper.angel.sociality.debatepost.model.vo.DebatepostVO" resultMap = "debatepostVOMap">
+		SELECT t2.DEBATEPOST_ID, t2.TOPIC_ID, t3.TOPIC_NAME,t2.DEBATEPOST_TITLE, t2.DEBATEPOST_CONTENT, t2.DEBATEPOST_USER_ID,
+		t2.WHETHER_POPULAR, t2.IMG, t2.POINT_PRAISE, t2.COMMENT_NUMBER,t2.READ_NUMBER,t2.CREATE_TIME,
+		t2.REPORT_COUNT, t2.NUMBER_REPORTS,t2.IS_DELETE,t2.nick_name FROM(
+				SELECT  t.DEBATEPOST_ID, t.TOPIC_ID, t.DEBATEPOST_TITLE, t.DEBATEPOST_CONTENT, t.DEBATEPOST_USER_ID,
+				t.WHETHER_POPULAR, t.IMG, t.POINT_PRAISE, t.COMMENT_NUMBER,t.READ_NUMBER,t.CREATE_TIME,
+				t.REPORT_COUNT, t.NUMBER_REPORTS,t.IS_DELETE,t1.nick_name 
+				from T_IM_DEBATEPOST t INNER JOIN user_info t1
+				on t.DEBATEPOST_USER_ID = t1.id
+				where 1=1 and  t.IS_DELETE !=2
+				<if test="topicId !=null and topicId >0">
+					and t.TOPIC_ID=#{topicId,jdbcType=BIGINT}
+				</if>
+				<if test="keyword !=null and keyword !=''">
+					and (t.DEBATEPOST_TITLE like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') 
+					or t1.nick_name like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%')
+					or t.DEBATEPOST_CONTENT like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+				</if>
+				<!-- 正常状态 -->
+				<if test="status !=null and status ==0">
+					and t.WHETHER_POPULAR=0 and t.IS_DELETE=0
+				</if>
+				<!-- 热门 -->
+				<if test="status !=null and status ==1">
+					and  t.WHETHER_POPULAR=1 and t.IS_DELETE=0
+				</if>
+				<!-- 隐藏 -->
+				<if test="status !=null and status ==2">
+					and  t.IS_DELETE=1
+				</if>
+				<!-- 删除 -->
+				<if test="status !=null and status ==3">
+					and  t.IS_DELETE=2
+				</if>
+				) t2 INNER JOIN T_IM_TOPIC t3
+				ON t2.TOPIC_ID = t3.TOPIC_ID 
+				order by t2.CREATE_TIME desc LIMIT #{beginIndex}, #{everyPage}
+	</select>
+
+	<select id="selectCoutDebatepostByBean" parameterType="com.jumper.angel.sociality.debatepost.model.vo.DebatepostVO" resultType = "java.lang.Integer">
+			select  count(t.DEBATEPOST_ID)
+			from T_IM_DEBATEPOST t INNER JOIN  user_info t1
+			on t.DEBATEPOST_USER_ID = t1.id
+			where 1=1 and  t.IS_DELETE !=2
+			<if test="topicId !=null and topicId >0">
+				and t.TOPIC_ID=#{topicId,jdbcType=BIGINT}
+			</if>
+			<if test="keyword !=null and keyword !=''">
+				and (t.DEBATEPOST_TITLE like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') 
+				or t1.nick_name like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%')
+				or t.DEBATEPOST_CONTENT like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>		
+			<!-- 正常状态 -->
+			<if test="status !=null and status ==0">
+				and t.WHETHER_POPULAR=0 and t.IS_DELETE=0
+			</if>
+			<!-- 热门 -->
+			<if test="status !=null and status ==1">
+				and  t.WHETHER_POPULAR=1 and t.IS_DELETE=0
+			</if>
+			<!-- 隐藏 -->
+			<if test="status !=null and status ==2">
+				and  t.IS_DELETE=1
+			</if>
+			<!-- 删除 -->
+			<if test="status !=null and status ==3">
+				and  t.IS_DELETE=2
+			</if>
+	</select>
+	
+	<select id="selectCoutDebatepostByTopicId" parameterType="com.jumper.angel.sociality.debatepost.model.vo.DebatepostVO" resultType = "java.lang.Integer">
+				select  count(t.DEBATEPOST_ID)
+		
+				from T_IM_DEBATEPOST t INNER JOIN  user_info t1
+		
+				on t.DEBATEPOST_USER_ID = t1.id
+				
+				where t.TOPIC_ID =#{topicId,jdbcType=BIGINT}
+				<!-- <if test="isDelete !=null and isDelete !=''">
+					and t.IS_DELETE =#{isDelete,jdbcType=INTEGER}
+				</if>		
+				<if test="isDelete ==null or isDelete ==''"> -->
+				    and t.IS_DELETE =0
+				<!-- </if>	 -->	
+				order by t.CREATE_TIME desc
+	</select>
+	
+	<!--当前话题帖子总数  -->
+	<select id="currentTopDebatePostCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		select
+			count(*) 
+		from T_IM_DEBATEPOST t INNER JOIN user_info t1 on t.DEBATEPOST_USER_ID = t1.id
+		where t.TOPIC_ID =#{topicId,jdbcType=BIGINT} and  t.IS_DELETE !=2
+	</select>
+	
+	<!-- 今日当前话题新增帖子数 -->
+	<select id="currentTopIncreaseDebatePostCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(*)
+		FROM T_IM_DEBATEPOST t
+		WHERE t.TOPIC_ID = #{topicId,jdbcType=BIGINT}
+		AND FROM_UNIXTIME(t.CREATE_TIME/1000,'%Y-%m-%d') = FROM_UNIXTIME(UNIX_TIMESTAMP(NOW()),'%Y-%m-%d');
+	</select>
+	
+	<!-- 今日当前话题帖子评论数 -->
+	<select id="currentTopDebatePostComCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		SELECT  
+			IFNULL(SUM(COMMENT_NUMBER),0)
+		FROM T_IM_DEBATEPOST t 
+		INNER JOIN user_info t1 ON t.DEBATEPOST_USER_ID = t1.id
+		WHERE t.TOPIC_ID = #{topicId,jdbcType=BIGINT}
+	</select>
+  
+</mapper>

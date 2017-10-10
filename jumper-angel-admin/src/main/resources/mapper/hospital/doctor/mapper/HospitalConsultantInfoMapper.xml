@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.hospital.doctor.mapper.HospitalConsultantInfoMapper">
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.doctor.entity.HospitalConsultantInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="file_url" jdbcType="VARCHAR" property="fileUrl" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="length" jdbcType="INTEGER" property="length" />
+    <result column="free" jdbcType="INTEGER" property="free" />
+    <result column="pay_consultant_id" jdbcType="INTEGER" property="payConsultantId" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
+    <result column="evaluate" jdbcType="INTEGER" property="evaluate" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="appkey_id" jdbcType="INTEGER" property="appkeyId" />
+    <result column="u_id" jdbcType="VARCHAR" property="uId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="cliemd_time" jdbcType="TIMESTAMP" property="cliemdTime" />
+    <result column="is_referral" jdbcType="INTEGER" property="isReferral" />
+    <result column="alter_type" jdbcType="INTEGER" property="alterType" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="close_time" jdbcType="TIMESTAMP" property="closeTime" />
+    <result column="last_repley_time" jdbcType="TIMESTAMP" property="lastRepleyTime" />
+    <result column="is_deal" jdbcType="INTEGER" property="isDeal" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="major_id" jdbcType="INTEGER" property="majorId" />
+    <result column="doctor_id" jdbcType="INTEGER" property="doctorId" />
+    <result column="is_admin" jdbcType="INTEGER" property="isAdmin" />
+    <result column="free_chartID" jdbcType="VARCHAR" property="free_chartID" />
+    
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, user_id, content, file_url, status, doctor_id, length, free, pay_consultant_id, 
+    add_time, major_id, evaluate, is_delete, appkey_id, u_id, update_time, cliemd_time, 
+    is_referral, alter_type, start_time, close_time, last_repley_time, is_deal,is_admin
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_consultant
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from hospital_consultant
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="com.jumper.angel.hospital.doctor.entity.HospitalConsultantInfo">
+    insert into hospital_consultant (id, user_id, content, 
+      file_url, status, doctor_id, 
+      length, free, pay_consultant_id, 
+      add_time, major_id, evaluate, 
+      is_delete, appkey_id, u_id, 
+      update_time, cliemd_time, is_referral, 
+      alter_type, start_time, close_time, 
+      last_repley_time, is_deal,is_admin)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{content,jdbcType=VARCHAR}, 
+      #{fileUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{doctorId,jdbcType=INTEGER}, 
+      #{length,jdbcType=INTEGER}, #{free,jdbcType=INTEGER}, #{payConsultantId,jdbcType=INTEGER}, 
+      #{addTime,jdbcType=TIMESTAMP}, #{majorId,jdbcType=INTEGER}, #{evaluate,jdbcType=INTEGER}, 
+      #{isDelete,jdbcType=INTEGER}, #{appkeyId,jdbcType=INTEGER}, #{uId,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{cliemdTime,jdbcType=TIMESTAMP}, #{isReferral,jdbcType=INTEGER}, 
+      #{alterType,jdbcType=INTEGER}, #{startTime,jdbcType=TIMESTAMP}, #{closeTime,jdbcType=TIMESTAMP}, 
+      #{lastRepleyTime,jdbcType=TIMESTAMP}, #{isDeal,jdbcType=INTEGER}, #{isAdmin,jdbcType=INTEGER})
+  </insert>
+  
+  <insert id="insertSelective">
+    insert into hospital_consultant
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">id,</if>
+      <if test="userId != null">user_id,</if>
+      <if test="content != null">content,</if>
+      <if test="fileUrl != null">file_url,</if>
+      <if test="status != null">status,</if>
+      <if test="doctorId != null">doctor_id,</if>
+      <if test="length != null">length,</if>
+      <if test="free != null">free,</if>
+      <if test="payConsultantId != null">pay_consultant_id,</if>
+      <if test="addTime != null">add_time,</if>
+      <if test="majorId != null">major_id,</if>
+      <if test="evaluate != null">evaluate,</if>
+      <if test="isDelete != null">is_delete,</if>
+      <if test="appkeyId != null">appkey_id,</if>
+      <if test="uId != null">        u_id,      </if>
+      <if test="updateTime != null">        update_time,      </if>
+      <if test="cliemdTime != null">        cliemd_time,      </if>
+      <if test="isReferral != null">        is_referral,      </if>
+      <if test="alterType != null">        alter_type,      </if>
+      <if test="startTime != null">        start_time,      </if>
+      <if test="closeTime != null">        close_time,      </if>
+      <if test="lastRepleyTime != null">        last_repley_time,      </if>
+      <if test="isDeal != null">        is_deal,      </if>
+      <if test="isAdmin != null">        is_admin,      </if>
+    </trim>
+    
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">        #{id,jdbcType=INTEGER},      </if>
+      <if test="userId != null">        #{userId,jdbcType=INTEGER},      </if>
+      <if test="content != null">        #{content,jdbcType=VARCHAR},      </if>
+      <if test="fileUrl != null">        #{fileUrl,jdbcType=VARCHAR},      </if>
+      <if test="status != null">        #{status,jdbcType=INTEGER},      </if>
+      <if test="doctorId != null">        #{doctorId,jdbcType=INTEGER},      </if>
+      <if test="length != null">        #{length,jdbcType=INTEGER},      </if>
+      <if test="free != null">        #{free,jdbcType=INTEGER},      </if>
+      <if test="payConsultantId != null">        #{payConsultantId,jdbcType=INTEGER},      </if>
+      <if test="addTime != null">        #{addTime,jdbcType=TIMESTAMP},      </if>
+      <if test="majorId != null">        #{majorId,jdbcType=INTEGER},      </if>
+      <if test="evaluate != null">        #{evaluate,jdbcType=INTEGER},      </if>
+      <if test="isDelete != null">        #{isDelete,jdbcType=INTEGER},      </if>
+      <if test="appkeyId != null">        #{appkeyId,jdbcType=INTEGER},      </if>
+      <if test="uId != null">        #{uId,jdbcType=VARCHAR},      </if>
+      <if test="updateTime != null">        #{updateTime,jdbcType=TIMESTAMP},      </if>
+      <if test="cliemdTime != null">        #{cliemdTime,jdbcType=TIMESTAMP},      </if>
+      <if test="isReferral != null">        #{isReferral,jdbcType=INTEGER},      </if>
+      <if test="alterType != null">        #{alterType,jdbcType=INTEGER},      </if>
+      <if test="startTime != null">        #{startTime,jdbcType=TIMESTAMP},      </if>
+      <if test="closeTime != null">        #{closeTime,jdbcType=TIMESTAMP},      </if>
+      <if test="lastRepleyTime != null">        #{lastRepleyTime,jdbcType=TIMESTAMP},      </if>
+      <if test="isDeal != null">        #{isDeal,jdbcType=INTEGER},      </if>
+      <if test="isAdmin != null">        #{isAdmin,jdbcType=INTEGER},      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective">
+    update hospital_consultant
+    <set>
+      <if test="userId != null">        user_id = #{userId,jdbcType=INTEGER},      </if>
+      <if test="content != null">        content = #{content,jdbcType=VARCHAR},      </if>
+      <if test="fileUrl != null">        file_url = #{fileUrl,jdbcType=VARCHAR},      </if>
+      <if test="status != null">        status = #{status,jdbcType=INTEGER},      </if>
+      <if test="doctorId != null">        doctor_id = #{doctorId,jdbcType=INTEGER},      </if>
+      <if test="length != null">        length = #{length,jdbcType=INTEGER},      </if>
+      <if test="free != null">        free = #{free,jdbcType=INTEGER},      </if>
+      <if test="payConsultantId != null">        pay_consultant_id = #{payConsultantId,jdbcType=INTEGER},      </if>
+      <if test="addTime != null">        add_time = #{addTime,jdbcType=TIMESTAMP},      </if>
+      <if test="majorId != null">        major_id = #{majorId,jdbcType=INTEGER},      </if>
+      <if test="evaluate != null">        evaluate = #{evaluate,jdbcType=INTEGER},      </if>
+      <if test="isDelete != null">        is_delete = #{isDelete,jdbcType=INTEGER},      </if>
+      <if test="appkeyId != null">        appkey_id = #{appkeyId,jdbcType=INTEGER},      </if>
+      <if test="uId != null">        u_id = #{uId,jdbcType=VARCHAR},      </if>
+      <if test="updateTime != null">        update_time = #{updateTime,jdbcType=TIMESTAMP},      </if>
+      <if test="cliemdTime != null">        cliemd_time = #{cliemdTime,jdbcType=TIMESTAMP},      </if>      
+      <if test="isReferral != null">        is_referral = #{isReferral,jdbcType=INTEGER},      </if>
+      <if test="alterType != null">        alter_type = #{alterType,jdbcType=INTEGER},      </if>
+      <if test="startTime != null">        start_time = #{startTime,jdbcType=TIMESTAMP},      </if>
+      <if test="closeTime != null">        close_time = #{closeTime,jdbcType=TIMESTAMP},      </if>
+      <if test="lastRepleyTime != null">        last_repley_time = #{lastRepleyTime,jdbcType=TIMESTAMP},      </if>
+      <if test="isDeal != null">        is_deal = #{isDeal,jdbcType=INTEGER},      </if>
+      <if test="isAdmin != null">        is_admin = #{isAdmin,jdbcType=INTEGER},      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByPrimaryKey" >
+    update hospital_consultant
+    set user_id = #{userId,jdbcType=INTEGER},
+      content = #{content,jdbcType=VARCHAR},
+      file_url = #{fileUrl,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      doctor_id = #{doctorId,jdbcType=INTEGER},
+      length = #{length,jdbcType=INTEGER},
+      free = #{free,jdbcType=INTEGER},
+      pay_consultant_id = #{payConsultantId,jdbcType=INTEGER},
+      add_time = #{addTime,jdbcType=TIMESTAMP},
+      major_id = #{majorId,jdbcType=INTEGER},
+      evaluate = #{evaluate,jdbcType=INTEGER},
+      is_delete = #{isDelete,jdbcType=INTEGER},
+      appkey_id = #{appkeyId,jdbcType=INTEGER},
+      u_id = #{uId,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      cliemd_time = #{cliemdTime,jdbcType=TIMESTAMP},
+      is_referral = #{isReferral,jdbcType=INTEGER},
+      alter_type = #{alterType,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      close_time = #{closeTime,jdbcType=TIMESTAMP},
+      last_repley_time = #{lastRepleyTime,jdbcType=TIMESTAMP},
+      is_deal = #{isDeal,jdbcType=INTEGER},
+      is_admin = #{isAdmin,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateKey">
+  	ALTER TABLE hospital_consultant DROP FOREIGN KEY hospital_consultant_ibfk_2
+  </update>
+  
+  <!-- 查询全部咨询页面的信息 -->
+  <select id="selectConsultantAll"  resultMap="BaseResultMap">
+  	select *
+  	from hospital_consultant
+  	ORDER BY update_time DESC
+  	limit 1,10
+  </select>
+  
+  <sql id="Base_Column">
+    DISTINCT(hc.id),hc.user_id, hc.doctor_id,hc.major_id,  hc.content, hc.file_url, hc.status, 
+    hc.length, hc.free, hc.pay_consultant_id, hc.add_time,  hc.evaluate, hc.is_delete, hc.appkey_id, 
+    hc.u_id, hc.update_time, hc.cliemd_time, hc.is_referral, hc.alter_type, hc.start_time, hc.close_time, hc.last_repley_time, hc.is_deal, hc.is_admin,
+    di.id AS di_id,di.name AS di_name,
+    dm.id AS dm_id, dm.major AS dm_major,
+    uei.id AS uei_id, uei.real_name AS uei_real_name,
+    ui.id AS ui_id, ui.mobile AS ui_mobile,ui.nick_name AS ui_nick_name,
+    dc.constant_id AS dc_constant_id,dc.status AS dc_status
+  </sql>
+  
+  <sql id="Base_Table">
+    `hospital_consultant` hc  
+  		LEFT JOIN `hospital_doctor_info` di ON hc.doctor_id = di.id
+    	LEFT JOIN `hospital_doctor_major` dm ON hc.major_id = dm.id
+    	LEFT JOIN `user_info` ui ON hc.user_id = ui.id
+    	LEFT JOIN `user_extra_info` uei ON hc.user_id = uei.user_id
+    	LEFT JOIN `hospital_doctor_comments` dc ON hc.id = dc.constant_id
+    	LEFT JOIN `monitor_admin` ma ON hc.doctor_id = ma.id
+  </sql>
+  
+  <!-- 查询所有咨询信息的数量 -->
+  <select id="findConsultantCount" resultType="int">
+  	select  count(1)
+  	from  `hospital_consultant` hc  
+	  		LEFT JOIN `hospital_doctor_info` di ON hc.doctor_id = di.id
+	    	LEFT JOIN `user_info` ui ON hc.user_id = ui.id
+	    	LEFT JOIN `user_extra_info` uei ON hc.user_id = uei.user_id
+	    	LEFT JOIN `monitor_admin` ma ON hc.doctor_id = ma.id
+  	where ui.mobile is not null AND hc.major_id IS NOT NULL AND hc.is_delete = 0
+  		<if test="keyword != null and keyword != ''">
+  			AND( INSTR(ui.nick_name,#{keyword})
+	  		OR INSTR(ui.mobile,#{keyword})
+	  		OR INSTR(uei.real_name,#{keyword})
+	  		OR INSTR(di.name,#{keyword})
+	 		OR (INSTR(ma.name,#{keyword}) AND hc.is_admin = 1)
+	  		)
+  		</if>
+  </select>
+  
+  <!--查找所有咨询信息并分页 -->
+  <select id="findAllHospitalConsultantInfo" resultType="java.util.Map">
+  	SELECT  
+		hc.id,hc.user_id, hc.doctor_id,hc.major_id,  hc.content, hc.file_url, hc.status, hc.free, 
+		hc.add_time,  hc.evaluate, hc.update_time, hc.cliemd_time, 
+		hc.start_time, hc.close_time, hc.is_admin,
+		uei.real_name AS real_name,
+		ui.mobile AS mobile,ui.nick_name AS nick_name
+	FROM  `hospital_consultant` hc  
+	  		LEFT JOIN `hospital_doctor_info` di ON hc.doctor_id = di.id
+	    	LEFT JOIN `user_info` ui ON hc.user_id = ui.id
+	    	LEFT JOIN `user_extra_info` uei ON hc.user_id = uei.user_id
+	    	LEFT JOIN `monitor_admin` ma ON hc.doctor_id = ma.id
+	 WHERE ui.mobile IS NOT NULL AND hc.major_id IS NOT NULL AND hc.is_delete = 0
+  		<if test="keyword != null and keyword != ''">
+  			AND( INSTR(ui.nick_name,#{keyword})
+	  		OR INSTR(ui.mobile,#{keyword})
+	  		OR INSTR(uei.real_name,#{keyword})
+	  		OR INSTR(di.name,#{keyword})
+	 		OR (INSTR(ma.name,#{keyword}) AND hc.is_admin = 1)
+	  		)
+  		</if>
+  	ORDER BY hc.update_time DESC
+  	limit #{start},#{everyPage}
+  </select>
+  
+  <!-- 查询问题库的数量 -->
+  <select id="findProblemBaseCount" resultType="int">
+  	select  count(1)
+  	from  `hospital_consultant` hc  
+	    	LEFT JOIN `user_info` ui ON hc.user_id = ui.id
+	    	LEFT JOIN `user_extra_info` uei ON hc.user_id = uei.user_id
+  	where hc.doctor_id is null and hc.status = 0 AND hc.major_id IS NOT NULL and hc.versions = 4
+  	<if test="keyword != null and keyword != ''">
+  			and( ui.nick_name LIKE concat('%',#{keyword},'%')
+  			OR ui.mobile LIKE concat('%',#{keyword},'%')
+  			OR uei.real_name LIKE concat('%',#{keyword},'%'))
+  		</if>
+  </select>
+  
+  <!--查找所有问题库问题并分页 -->
+  <select id="findAllProblemBase" resultType="java.util.Map">
+  	select  hc.id,hc.content,ui.nick_name,ui.mobile, uei.real_name,hc.major_id,hc.add_time,hc.user_id
+  	from  `hospital_consultant` hc  
+	    	LEFT JOIN `user_info` ui ON hc.user_id = ui.id
+	    	LEFT JOIN `user_extra_info` uei ON hc.user_id = uei.user_id
+  	where hc.doctor_id is null and hc.status = 0 AND hc.major_id IS NOT NULL and hc.versions = 4
+  	<if test="keyword != null and keyword != ''">
+  			and( ui.nick_name LIKE concat('%',#{keyword},'%')
+  			OR ui.mobile LIKE concat('%',#{keyword},'%')
+  			OR uei.real_name LIKE concat('%',#{keyword},'%'))
+  		</if>
+  	ORDER BY hc.start_time DESC
+  	limit #{start},#{everyPage}
+  </select>
+  
+  
+  <!-- 通过当前用户的id查询所有我的解答，回复中 -->
+  <select id="selectByDoctorIdMyAnswering" resultType="java.util.Map">
+  	select  hc.id,hc.doctor_id,hc.user_id,hc.content,hc.major_id,hc.add_time,hc.status,
+  			ui.nick_name,ui.mobile, uei.real_name
+  	from  `hospital_consultant` hc
+  			LEFT JOIN `user_info` ui ON hc.user_id = ui.id
+  			LEFT JOIN `user_extra_info` uei ON hc.user_id = uei.user_id
+  	where hc.doctor_id = #{currentId} and hc.status in(1,2,3,4) and hc.is_admin = 1 
+  		AND hc.major_id IS NOT NULL and hc.versions = 4
+  	<if test="keyword != null and keyword != ''">
+  		and( ui.nick_name LIKE concat('%',#{keyword},'%')
+  		OR ui.mobile LIKE concat('%',#{keyword},'%')
+  		OR uei.real_name LIKE concat('%',#{keyword},'%'))
+  	</if>
+  	ORDER BY hc.update_time DESC
+  	<!-- limit #{start},#{everyPage} -->
+  </select>
+  
+  <!-- 通过当前用户的id查询所有我的解答,已结束 -->
+  <select id="selectByDoctorIdMyAnswerend" resultType="java.util.Map">
+  	select  hc.id,hc.doctor_id,hc.user_id,hc.content,hc.major_id,hc.add_time,hc.evaluate,
+  			ui.nick_name,ui.mobile, uei.real_name
+  	from  `hospital_consultant` hc
+  			LEFT JOIN `user_info` ui ON hc.user_id = ui.id
+  			LEFT JOIN `user_extra_info` uei ON hc.user_id = uei.user_id
+  	where hc.doctor_id = #{currentId} and hc.status = 5 and hc.is_admin = 1 AND hc.major_id IS NOT NULL
+  	<if test="keyword != null and keyword != ''">
+  		and( ui.nick_name LIKE concat('%',#{keyword},'%')
+  		OR ui.mobile LIKE concat('%',#{keyword},'%')
+  		OR uei.real_name LIKE concat('%',#{keyword},'%'))
+  	</if>
+  	ORDER BY hc.update_time DESC
+  	limit #{start},#{everyPage}
+  </select>
+  
+  <!-- 查询我的解答的数量,回复中 -->
+  <select id="findMyAnsweringCount" resultType="int">
+  	select  count(1)
+  	from  `hospital_consultant` hc
+  			LEFT JOIN `user_info` ui ON hc.user_id = ui.id
+  			LEFT JOIN `user_extra_info` uei ON hc.user_id = uei.user_id
+  	where hc.doctor_id = #{currentId} and hc.status in(1,2,3,4) and hc.is_admin = 1 
+  		AND hc.major_id IS NOT NULL and hc.versions = 4
+  	<if test="keyword != null and keyword != ''">
+  		and( ui.nick_name LIKE concat('%',#{keyword},'%')
+  		OR ui.mobile LIKE concat('%',#{keyword},'%')
+  		OR uei.real_name LIKE concat('%',#{keyword},'%'))
+  	</if>
+  </select>
+  <!-- 查询我的解答的数量，已结束 -->
+  <select id="findMyAnswerendCount" resultType="int">
+  	select  count(1)
+  	from  `hospital_consultant` hc
+  			LEFT JOIN `user_info` ui ON hc.user_id = ui.id
+  			LEFT JOIN `user_extra_info` uei ON hc.user_id = uei.user_id
+  	where hc.doctor_id = #{currentId} and hc.status = 5 and hc.is_admin = 1 AND hc.major_id IS NOT NULL
+  	<if test="keyword != null and keyword != ''">
+  		and( ui.nick_name LIKE concat('%',#{keyword},'%')
+  		OR ui.mobile LIKE concat('%',#{keyword},'%')
+  		OR uei.real_name LIKE concat('%',#{keyword},'%'))
+  	</if>
+  </select>
+  
+  <!-- 修改咨询服务状态 -->
+   <update id="updateStatusById" parameterType="java.lang.String">
+  	update hospital_consultant
+  	set status = 3
+  	where id = #{id}
+  </update>
+  
+</mapper>

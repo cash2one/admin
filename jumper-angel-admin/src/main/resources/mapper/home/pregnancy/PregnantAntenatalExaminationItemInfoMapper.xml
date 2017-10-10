@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.home.pregnancy.mapper.PregnantAntenatalExaminationItemInfoMapper">
+	<!-- 为了返回list 类型而定义的returnMap -->
+	<resultMap type="com.jumper.angel.home.pregnancy.entity.PregnantAntenatalExaminationItemInfo" id="BaseResultMap">
+		<result property="examinationInfoId" column="examination_info_id"/>
+		<result property="name" column="name"/>
+		<result property="content" column="content"/>
+		<result property="addTime" column="add_time" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	
+	<!--记录表中所有的成员 -->
+    <sql id="Base_Column_List">
+		id,examination_info_id,name,content,add_time
+    </sql>
+	
+	<!-- 通过产检信息id查询孕期产检项目信息列表 -->
+	<select id="findPreItemsByPaeId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	   select * from pregnant_antenatal_examination_item_info where examination_info_id = #{paeId} 
+	   order by add_time desc
+	</select>
+	
+	<!-- 查询总记录数 -->
+	<select id="findCount" parameterType="map" resultType="int">
+		select count(*) from pregnant_antenatal_examination_item_info where 1=1
+			<if test="infoId>0">
+				and examination_info_id=#{infoId}
+			</if>
+			<if test="keywords!=null and keywords!=''">
+				and instr(name,#{keywords})
+			</if>
+	</select>
+	
+	<!-- 获取产检项目信息 -->
+	<select id="findPregAnteExamItemInfoList" parameterType="map" resultMap="BaseResultMap">
+		select 
+			<include refid="Base_Column_List"></include> 
+			from pregnant_antenatal_examination_item_info where 1=1
+				<if test="keywords!=null and keywords!=''">
+					and instr(name,#{keywords})
+				</if>
+				<if test="infoId>0">
+					and examination_info_id=#{infoId}
+				</if>
+				order by add_time desc limit #{beginIndex},#{everyPage}
+	</select>
+	
+	<!-- 删除产检项目信息 -->
+	<delete id="deleteExaminationItemInfo" parameterType="int">
+		delete from pregnant_antenatal_examination_item_info where id=#{examinationItemInfoId}
+	</delete>
+	
+	<!-- 查询产检项目是否存在 -->
+	<select id="checkExamNumbersByName" parameterType="map" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include> 
+			from pregnant_antenatal_examination_item_info where name=#{itemName} and examination_info_id=#{examId} and id!=#{itemId}
+	</select>
+	
+	<!-- 添加产检项目信息 -->
+	<insert id="addExaminationItemInfo" parameterType="com.jumper.angel.home.pregnancy.entity.PregnantAntenatalExaminationItemInfo"
+		keyColumn="GENERATED_KEY" keyProperty="id" flushCache="true" useGeneratedKeys="true">
+		insert into pregnant_antenatal_examination_item_info(examination_info_id,name,content,add_time) 
+			values(#{examinationInfoId},#{name},#{content},#{addTime})
+	</insert>
+    
+    <!-- 修改产检项目信息 -->
+    <update id="editExaminationItemInfo" parameterType="com.jumper.angel.home.pregnancy.entity.PregnantAntenatalExaminationItemInfo">
+    	update pregnant_antenatal_examination_item_info set examination_info_id=#{examinationInfoId},name=#{name},
+    		content=#{content} where id=#{id}
+    </update>
+</mapper>

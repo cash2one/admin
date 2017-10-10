@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.hospital.business.mapper.DeviceMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.business.entity.Device" >
+   	<id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="series_number" property="seriesNumber" jdbcType="VARCHAR" />
+    <result column="mac" property="mac" jdbcType="VARCHAR" />
+    <result column="business_id" property="businessId" jdbcType="VARCHAR" />
+    <result column="device_type" property="deviceType" jdbcType="INTEGER" />
+    <result column="stat" property="stat" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="first_login" property="firstLogin" jdbcType="TIMESTAMP" />
+    <result column="last_logout" property="lastLogout" jdbcType="TIMESTAMP" />
+    <result column="outdate" property="outdate" jdbcType="TIMESTAMP" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="manufacturer" property="manufacturer" jdbcType="VARCHAR" />
+    <result column="device_name" property="deviceName" jdbcType="VARCHAR" />
+    <result column="connect_type" property="connectType" jdbcType="INTEGER" />
+    <result column="debug_device" property="debugDevice" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    series_number, id, mac, business_id, device_type, stat, create_date, first_login, last_logout, 
+    outdate, description, manufacturer, device_name, connect_type, debug_device
+  </sql>
+  
+  <!-- 新增 -->
+  <insert id="insert" parameterType="com.jumper.angel.hospital.business.entity.Device" >
+    insert into api_device (series_number, id, mac, business_id,
+      device_type, stat, create_date, 
+      first_login, last_logout, outdate, 
+      description, manufacturer, device_name, connect_type, debug_device)
+    values (#{seriesNumber,jdbcType=VARCHAR}, #{id,jdbcType=BIGINT}, #{mac}, #{businessId,jdbcType=VARCHAR}, 
+      #{deviceType,jdbcType=INTEGER}, #{stat,jdbcType=VARCHAR}, #{createDate,jdbcType=BIGINT}, 
+      #{firstLogin,jdbcType=BIGINT}, #{lastLogout,jdbcType=BIGINT}, #{outdate,jdbcType=BIGINT}, 
+      #{description,jdbcType=VARCHAR}, #{manufacturer,jdbcType=VARCHAR}, #{deviceName}, #{connectType}, #{debugDevice})
+  </insert>
+  
+  <!-- 查询商户设备信息 -->
+  <select id="findBusinessDevice" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+  	select
+  		<include refid="Base_Column_List"></include>
+  	from api_device where business_id=#{businessId} 
+  	<if test="mac != ''">
+  		and (series_number=#{mac} or mac=#{mac})
+  	</if>
+  	<if test="deviceType != -1">
+  		and device_type=#{deviceType}
+  	</if>
+  	order by outdate desc limit #{beginIndex}, #{everyPage}
+  </select>
+  
+  <!-- 查询商户设备总记录数 -->
+  <select id="findDeviceCount" resultType="Integer" parameterType="java.util.HashMap">
+  	select
+  		count(1)
+  	from api_device where business_id=#{businessId} 
+  	<if test="mac != ''">
+  		and (series_number=#{mac} or mac=#{mac})
+  	</if>
+  	<if test="deviceType != -1">
+  		and device_type=#{deviceType}
+  	</if>
+  </select>
+  
+  <!-- 通过序列号查询商户设备 -->
+  <select id="findBusinessDeviceBySeriesNumber" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+  	select
+  		<include refid="Base_Column_List"></include>
+  	from api_device where series_number=#{seriesNumber}
+  </select>
+  
+  <!-- 通过MAC查询商户设备 -->
+  <select id="findBusinessDeviceByMAC" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+  	select
+  		<include refid="Base_Column_List"></include>
+  	from api_device where mac=#{mac}
+  </select>
+  
+  <!-- 删除设备 -->
+  <delete id="deleteDevice" parameterType="Long">
+  	delete from api_device where id=#{value}
+  </delete>
+  
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.hospital.hospital.mapper.HospitalMajorInfoMapper">
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.hospital.entity.HospitalMajorInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="hospital_id" jdbcType="INTEGER" property="hospitalId" />
+    <result column="major_id" jdbcType="INTEGER" property="majorId" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
+    <result column="is_network" jdbcType="INTEGER" property="isNetwork" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, hospital_id, major_id, add_time, is_network, is_delete
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_major_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByHospitalId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_major_info
+    where hospital_id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from hospital_major_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalMajorInfo">
+    insert into hospital_major_info (id, hospital_id, major_id, 
+      add_time, is_network, is_delete
+      )
+    values (#{id,jdbcType=INTEGER}, #{hospitalId,jdbcType=INTEGER}, #{majorId,jdbcType=INTEGER}, 
+      #{addTime,jdbcType=TIMESTAMP}, #{isNetwork,jdbcType=INTEGER}, #{isDelete,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalMajorInfo">
+    insert into hospital_major_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">        id,      </if>
+      <if test="hospitalId != null">hospital_id,      </if>
+      <if test="majorId != null">   major_id,      </if>
+      <if test="addTime != null">   add_time,      </if>
+      <if test="isNetwork != null"> is_network,      </if>
+      <if test="isDelete != null">  is_delete,      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">        #{id,jdbcType=INTEGER},      </if>
+      <if test="hospitalId != null">#{hospitalId,jdbcType=INTEGER},      </if>
+      <if test="majorId != null">   #{majorId,jdbcType=INTEGER},      </if>
+      <if test="addTime != null">   #{addTime,jdbcType=TIMESTAMP},      </if>
+      <if test="isNetwork != null"> #{isNetwork,jdbcType=INTEGER},      </if>
+      <if test="isDelete != null">  #{isDelete,jdbcType=INTEGER},      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalMajorInfo">
+    update hospital_major_info
+    <set>
+      <if test="hospitalId != null">     hospital_id = #{hospitalId,jdbcType=INTEGER},      </if>
+      <if test="majorId != null">        major_id = #{majorId,jdbcType=INTEGER},      </if>
+      <if test="addTime != null">        add_time = #{addTime,jdbcType=TIMESTAMP},      </if>
+      <if test="isNetwork != null">      is_network = #{isNetwork,jdbcType=INTEGER},      </if>
+      <if test="isDelete != null">       is_delete = #{isDelete,jdbcType=INTEGER},      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalMajorInfo">
+    update hospital_major_info
+    set hospital_id = #{hospitalId,jdbcType=INTEGER},
+      major_id = #{majorId,jdbcType=INTEGER},
+      add_time = #{addTime,jdbcType=TIMESTAMP},
+      is_network = #{isNetwork,jdbcType=INTEGER},
+      is_delete = #{isDelete,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

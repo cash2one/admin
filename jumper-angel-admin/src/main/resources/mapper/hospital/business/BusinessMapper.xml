@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.hospital.business.mapper.BusinessMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.business.entity.Business" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="business_name" property="businessName" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="push_url" property="pushUrl" jdbcType="VARCHAR" />
+    <result column="real_push_url" property="realPushUrl" jdbcType="VARCHAR" />
+    <result column="notify_url" property="notifyUrl" jdbcType="VARCHAR" />
+    <result column="verify_code" property="verifyCode" jdbcType="VARCHAR" />
+    <result column="expire" property="expire" jdbcType="TIMESTAMP" />
+    <result column="app_id" property="appId" jdbcType="VARCHAR" />
+    <result column="stat" property="stat" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="activate" property="activate" jdbcType="INTEGER" />
+    <result column="activate_date" property="activateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, business_name, password, email, phone, create_date, push_url, real_push_url, 
+    notify_url, verify_code, expire, app_id, stat, remark, activate, activate_date
+  </sql>
+  
+  <!-- 查询所有商户信息 -->
+  <select id="findAllBusiness" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+  	select
+  		id,
+  		business_name as businessName,
+  		email,
+  		create_date as createDate,
+  		(select count(1) from api_device where business_id=bus.id and device_type=1) as xdy,
+		(select count(1) from api_device where business_id=bus.id and device_type=2) as txy,
+		(select count(1) from api_device where business_id=bus.id and device_type=3) as xty,
+		(select count(1) from api_device where business_id=bus.id and device_type=4) as xyy,
+		(select count(1) from api_device where business_id=bus.id and device_type=5) as twj,
+		(select count(1) from api_device where business_id=bus.id and device_type=6) as xo2y,
+		(select count(1) from api_device where business_id=bus.id and device_type=7) as tzc,
+		case stat
+			when 0 then '正常使用'
+			when 1 then '停止合作'
+			when 2 then '暂停中' else '其他' end as statusName
+	from api_business as bus where activate=1
+	<if test="businessName != ''">
+		and business_name like concat('%', #{businessName}, '%')
+	</if>
+	order by create_date desc limit #{beginIndex}, #{everyPage}
+  </select>
+  
+  <!-- 查询商户总记录数 -->
+   <select id="findCount" resultType="Integer" parameterType="String">
+  	select
+  		count(1)
+	from api_business as bus where activate=1
+	<if test="value != ''">
+		and business_name like concat('%', #{value}, '%')
+	</if>
+  </select>
+  
+</mapper>

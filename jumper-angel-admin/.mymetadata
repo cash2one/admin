@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="jumper-angel-admin"
+  id="myeclipse.1496981136549"
+  context-root="/admin"
+  j2ee-spec="1.7"
+  archive="jumper-angel-admin.war">
+  <attributes>
+    <attribute name="webrootdir" value="src/main/webapp" />
+  </attributes>
+</project-module>
+

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.sociality.comment.mapper.CommentOnMapper" >
+  
+  <resultMap id="commenOnMap" type="com.jumper.angel.sociality.comment.model.vo.CommentOnVO" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <id column="FID" property="fid" jdbcType="BIGINT" />
+    <result column="DEBATEPOST_ID" property="debatepostId" jdbcType="BIGINT" />
+    <result column="FROM_USER_ID" property="fromUserId" jdbcType="VARCHAR" />
+    <result column="TO_USER_ID" property="toUserId" jdbcType="VARCHAR" />
+    <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+    <result column="MESSAGETYPE" property="messageType" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="INTEGER" />
+    <result column="GRADE" property="grade" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    
+    <result column="FROM_NICK_NAME" property="fromNickName" jdbcType="VARCHAR" />
+    <result column="FROM_USER_IMG" property="fromUserImg" jdbcType="VARCHAR" />
+    <result column="TO_NICK_NAME" property="toNickName" jdbcType="VARCHAR" />
+    <result column="TO_USER_IMG" property="toUserImg" jdbcType="VARCHAR" />
+    <result column="DEBATEPOST_TITLE" property="debatepostTitle" jdbcType="VARCHAR"/>
+    <result column="STRDATETIME" property="strDateTime" jdbcType="VARCHAR"/>
+    <result column="TOPIC_ID" property="topicId" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID,FID,DEBATEPOST_ID,FROM_USER_ID,TO_USER_ID,CONTENT, MESSAGETYPE, STATUS, GRADE,CREATE_TIME
+  </sql>
+  
+  <update id="updateById" parameterType="com.jumper.angel.sociality.comment.model.po.CommentOnPO">
+  	update T_IM_COMMENT_ON 
+  		<set>
+  			<if test="status !=null and status>=0">
+  				STATUS = #{status,jdbcType=INTEGER},
+  			</if>
+  		</set>
+  	where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+   <update id="updateByFid" parameterType="com.jumper.angel.sociality.comment.model.po.CommentOnPO">
+  	update T_IM_COMMENT_ON 
+  		<set>
+  			<if test="status !=null and status>=0">
+  				STATUS = #{status,jdbcType=INTEGER},
+  			</if>
+  		</set>
+  	where FID = #{fid,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectById" parameterType="java.lang.Long" resultMap="commenOnMap">
+  		select t.ID,t.FID,t.DEBATEPOST_ID,t.FROM_USER_ID,t.TO_USER_ID,t.CONTENT,t.MESSAGETYPE,
+  			   t.STATUS,t.GRADE,t.CREATE_TIME,t5.DEBATEPOST_TITLE,
+  			   DATE_FORMAT(t.CREATE_TIME,'%Y/%m/%d %H:%i') as STRDATETIME,
+			   (select t1.nick_name  from user_info t1 where t1.id = t.FROM_USER_ID) as FROM_NICK_NAME,
+			   (select t2.user_img  from user_info t2 where t2.id = t.FROM_USER_ID) as FROM_USER_IMG,
+			   (select t3.nick_name from user_info t3 where t3.id = t.TO_USER_ID) as TO_NICK_NAME ,
+			   (select t4.user_img  from user_info t4 where t4.id = t.TO_USER_ID) as TO_USER_IMG
+
+ 		from T_IM_COMMENT_ON t INNER JOIN T_IM_DEBATEPOST t5 on t.DEBATEPOST_ID  = t5.DEBATEPOST_ID
+ 	    where t.ID = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectByBean" parameterType="com.jumper.angel.sociality.comment.model.vo.CommentOnVO" resultMap="commenOnMap">
+  	select  t.ID,t.FID,t.DEBATEPOST_ID,t.FROM_USER_ID,t.TO_USER_ID,t.CONTENT,t.MESSAGETYPE,
+		  	t.STATUS,t.GRADE,t.CREATE_TIME,DATE_FORMAT(t.CREATE_TIME,'%Y/%m/%d %H:%i') as STRDATETIME,
+		  	t5.DEBATEPOST_TITLE,
+			(select t1.nick_name  from user_info t1 where t1.id = t.FROM_USER_ID) as FROM_NICK_NAME,
+			(select t2.user_img  from user_info t2 where t2.id = t.FROM_USER_ID) as FROM_USER_IMG,
+			(select t3.nick_name from user_info t3 where t3.id = t.TO_USER_ID) as TO_NICK_NAME ,
+			(select t4.user_img  from user_info t4 where t4.id = t.TO_USER_ID) as TO_USER_IMG
+			from T_IM_COMMENT_ON t INNER JOIN T_IM_DEBATEPOST t5 on t.DEBATEPOST_ID = t5.DEBATEPOST_ID
+	<where>
+		<if test="fid !=null and fid >0">
+			and  t.FID = #{fid,jdbcType=BIGINT}
+		</if>
+		<if test="debatepostId !=null and debatepostId >0">
+			and t.DEBATEPOST_ID = #{debatepostId,jdbcType=BIGINT}
+		</if>
+		<if test="fromUserId !=null and fromUserId !=''">
+			and t.FROM_USER_ID = #{fromUserId,jdbcType=VARCHAR}
+		</if>
+		<if test="toUserId !=null and toUserId !=''">
+			and t.TO_USER_ID = #{toUserId,jdbcType=VARCHAR}
+		</if>
+		<if test="messageType !=null and messageType !=''">
+			and t.MESSAGETYPE = #{messageType,jdbcType=VARCHAR}
+		</if>
+		<if test="keyword !=null and keyword !=''">
+			and (t5.DEBATEPOST_TITLE like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') or t1.nick_name like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+		</if>
+		AND t.STATUS !=3 <!-- AND t.MESSAGETYPE='comment' -->
+	</where>
+	order by t.CREATE_TIME desc
+  </select>
+  
+  <!-- 查询已删除的评论 -->
+  <select id="selectDelByBean" parameterType="com.jumper.angel.sociality.comment.model.vo.CommentOnVO" resultMap="commenOnMap">
+  	select  t.ID,t.FID,t.DEBATEPOST_ID,t.FROM_USER_ID,t.TO_USER_ID,t.CONTENT,t.MESSAGETYPE,
+		  	t.STATUS,t.GRADE,t.CREATE_TIME,DATE_FORMAT(t.CREATE_TIME,'%Y/%m/%d %H:%i') as STRDATETIME,
+		  	t5.DEBATEPOST_TITLE,
+			(select t1.nick_name  from user_info t1 where t1.id = t.FROM_USER_ID) as FROM_NICK_NAME,
+			(select t2.user_img  from user_info t2 where t2.id = t.FROM_USER_ID) as FROM_USER_IMG,
+			(select t3.nick_name from user_info t3 where t3.id = t.TO_USER_ID) as TO_NICK_NAME ,
+			(select t4.user_img  from user_info t4 where t4.id = t.TO_USER_ID) as TO_USER_IMG
+			from T_IM_COMMENT_ON t INNER JOIN T_IM_DEBATEPOST t5 on t.DEBATEPOST_ID = t5.DEBATEPOST_ID
+	<where>
+		<if test="fid !=null and fid >0">
+			and  t.FID = #{fid,jdbcType=BIGINT}
+		</if>
+		<if test="debatepostId !=null and debatepostId >0">
+			and t.DEBATEPOST_ID = #{debatepostId,jdbcType=BIGINT}
+		</if>
+		<if test="fromUserId !=null and fromUserId !=''">
+			and t.FROM_USER_ID = #{fromUserId,jdbcType=VARCHAR}
+		</if>
+		<if test="toUserId !=null and toUserId !=''">
+			and t.TO_USER_ID = #{toUserId,jdbcType=VARCHAR}
+		</if>
+		<if test="messageType !=null and messageType !=''">
+			and t.MESSAGETYPE = #{messageType,jdbcType=VARCHAR}
+		</if>
+		<if test="keyword !=null and keyword !=''">
+			and (t5.DEBATEPOST_TITLE like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') or t1.nick_name like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+		</if>
+		AND t.STATUS = 3 
+	</where>
+	order by t.CREATE_TIME desc
+  </select>
+  
+   <!-- 根据评论内容或者用户昵称查询评论 -->
+    <select id="getCommentByContentOrNickName" parameterType="com.jumper.angel.sociality.comment.model.vo.CommentOnVO" resultMap="commenOnMap">
+    	SELECT k.ID,k.FID,k.FROM_USER_ID,k.MESSAGETYPE, DATE_FORMAT(k.CREATE_TIME,'%Y/%m/%d %H:%i:%s') AS STRDATETIME,
+    	k.TO_USER_ID,k.FROM_NICK_NAME,k.CONTENT,k.TO_NICK_NAME,k.DEBATEPOST_ID,d.TOPIC_ID,d.DEBATEPOST_TITLE FROM(
+		SELECT t.ID,t.FID,t.FROM_USER_ID,t.MESSAGETYPE,t.CREATE_TIME,t.CONTENT,t.TO_USER_ID,
+		(SELECT user_info.nick_name FROM user_info WHERE user_info.id=t.TO_USER_ID) AS TO_NICK_NAME,
+		t.DEBATEPOST_ID,u.nick_name AS FROM_NICK_NAME
+		FROM T_IM_COMMENT_ON t 
+		INNER JOIN user_info u ON t.FROM_USER_ID=u.id
+		<where> t.STATUS=1
+			<if test="keyword !=null and keyword !=''">
+				and (t.content LIKE CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') 
+				or u.nick_name like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>
+		</where>
+		) AS k  LEFT JOIN T_IM_DEBATEPOST d 
+		ON k.DEBATEPOST_ID=d.DEBATEPOST_ID WHERE d.IS_DELETE=0
+		ORDER BY k.CREATE_TIME DESC LIMIT #{beginIndex}, #{everyPage}
+    </select>
+    
+    <!-- 查询符合条件的评论数量 -->
+    <select id="countComment" parameterType="com.jumper.angel.sociality.comment.model.vo.CommentOnVO" resultType="java.lang.Integer">
+    	SELECT COUNT(1) FROM (
+		SELECT k.ID,k.FID,k.FROM_USER_ID,k.MESSAGETYPE, DATE_FORMAT(k.CREATE_TIME,'%Y/%m/%d %H:%i:%s') AS STRDATETIME,
+    	k.TO_USER_ID,k.FROM_NICK_NAME,k.CONTENT,k.TO_NICK_NAME,k.DEBATEPOST_ID,d.TOPIC_ID,d.DEBATEPOST_TITLE FROM(
+		SELECT t.ID,t.FID,t.FROM_USER_ID,t.MESSAGETYPE,t.CREATE_TIME,t.CONTENT,t.TO_USER_ID,
+		(SELECT user_info.nick_name FROM user_info WHERE user_info.id=t.TO_USER_ID) AS TO_NICK_NAME,
+		t.DEBATEPOST_ID,u.nick_name AS FROM_NICK_NAME
+		FROM T_IM_COMMENT_ON t 
+		INNER JOIN user_info u ON t.FROM_USER_ID=u.id
+		<where> t.STATUS=1
+			<if test="keyword !=null and keyword !=''">
+				and (t.content LIKE CONCAT('%',#{keyword,jdbcType=VARCHAR},'%') 
+				or u.nick_name like CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+			</if>
+		</where>
+		) AS k  LEFT JOIN T_IM_DEBATEPOST d 
+		ON k.DEBATEPOST_ID=d.DEBATEPOST_ID WHERE d.IS_DELETE=0
+		) AS a
+    </select>
+    
+    <!-- 根据帖子DEBATEPOST_ID修改该帖子下所有的评论的状态 -->
+    <update id="updateByDebatepostId" parameterType="com.jumper.angel.sociality.comment.model.po.CommentOnPO">
+	  	update T_IM_COMMENT_ON 
+	  		<set>
+	  			<if test="status !=null and status>=0">
+	  				STATUS = #{status,jdbcType=INTEGER},
+	  			</if>
+	  		</set>
+	  	where DEBATEPOST_ID = #{debatepostId,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 根据帖子ID查询该帖子下的所有评论和回复 -->
+    <select id="getCommentByDebatepostId" parameterType="com.jumper.angel.sociality.comment.model.vo.CommentOnVO" resultMap="commenOnMap">
+    	SELECT * FROM T_IM_COMMENT_ON 
+    	<where>
+    		1=1
+    		<if test="debatepostId!=null">
+    			AND DEBATEPOST_ID = #{debatepostId,jdbcType=BIGINT}
+    		</if>
+    	</where>
+    </select>
+</mapper>

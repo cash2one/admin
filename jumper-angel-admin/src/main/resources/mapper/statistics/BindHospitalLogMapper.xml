@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.user.statistics.mapper.BindHospitalLogMapper" >
+  <resultMap id="BaseResultMap" type="com.jumper.angel.user.statistics.entity.BindHospitalLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="hospital_id" property="hospitalId" jdbcType="BIGINT" />
+    <result column="opration_status" property="oprationStatus" jdbcType="INTEGER" />
+    <result column="mobile_ip" property="mobileIp" jdbcType="VARCHAR" />
+    <result column="lng" property="lng" jdbcType="DECIMAL" />
+    <result column="lat" property="lat" jdbcType="DECIMAL" />
+    <result column="mobile_mac" property="mobileMac" jdbcType="VARCHAR" />
+    <result column="version_name" property="versionName" jdbcType="VARCHAR" />
+    <result column="mobile_type" property="mobileType" jdbcType="INTEGER" />
+    <result column="cause" property="cause" jdbcType="VARCHAR" />
+    <result column="first_binding" property="firstBinding" jdbcType="INTEGER" />
+    <result column="binding_date" property="bindingDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, hospital_id, opration_status, mobile_ip, lng, lat, mobile_mac, version_name, 
+    mobile_type, cause, first_binding, binding_date
+  </sql>
+  <sql id="count1">
+    (select count(*) from user_extra_info where common_hospital=h.id)
+  </sql>
+  <sql id="count2">
+    (select count(*) from bind_hospital_log where hospital_id=h.id 
+      and first_binding=1 
+      <if test="beginDate != null and beginDate != ''">
+      <![CDATA[
+        and binding_date>=#{beginDate}
+      ]]>
+    </if>
+    <if test="endDate != null and endDate != ''">
+      <![CDATA[
+        and binding_date<=#{endDate}
+      ]]>
+    </if>)
+  </sql>
+  <sql id="count3">
+    (select count(DISTINCT consultant_id) from jumper_common.im_message m,inq_hospital_consultant c where
+        m.consultant_id=c.id and c.hospital_id=h.id and bus_code=50101 and c.status=5
+          and send_chat_id like '%yy%' and send_time BETWEEN #{beginDate} and #{endDate})
+  </sql>
+  <sql id="count4">
+    (SELECT count(*) from jumper_lease.lease_order where hospital_id=h.id 
+      and order_status in (1,2,3) 
+      <if test="beginDate != null and beginDate != ''">
+      <![CDATA[
+        and create_time>=#{beginDate}
+      ]]>
+    </if>
+    <if test="endDate != null and endDate != ''">
+      <![CDATA[
+        and create_time<=#{endDate}
+      ]]>
+    </if>)
+  </sql>
+  <sql id="count5">
+    (select count(*) from monitor_order_consumer m,monitor_order o where m.monitor_order_id=o.id 
+        and m.state=1 and remote_type=1 and monitor_order_id in(
+        select id from monitor_order where monitor_hospital_id in(SELECT id from monitor_hospital where hospital_id=h.id))
+        <if test="beginDate != null and beginDate != ''">
+          <![CDATA[
+            and report_time>=#{beginDate}
+          ]]>
+        </if>
+        <if test="endDate != null and endDate != ''">
+          <![CDATA[
+            and report_time<=#{endDate}
+          ]]>
+        </if>)
+  </sql>
+   <sql id="count6">
+    (select count(*) from jumper_health_nutrition.hospital_outpatient_record where hospital_id=h.id 
+      <if test="beginDate != null and beginDate != ''">
+      <![CDATA[
+        and outpatient_time>=#{beginDate}
+      ]]>
+    </if>
+    <if test="endDate != null and endDate != ''">
+      <![CDATA[
+        and outpatient_time<=#{endDate}
+      ]]>
+    </if>)
+  </sql>
+  <sql id="count7">
+    (select count(*) from bind_hospital_log where hospital_id=h.id 
+      and first_binding=1 
+      <if test="beginDate != null and beginDate != ''">
+      <![CDATA[
+        and binding_date>=#{beginDate2}
+      ]]>
+    </if>
+    <if test="endDate != null and endDate != ''">
+      <![CDATA[
+        and binding_date<=#{endDate}
+      ]]>
+    </if>)
+  </sql>
+  <sql id="count8">
+    (select count(*) from bind_hospital_log where hospital_id=h.id 
+      and first_binding=1 
+      <if test="beginDate != null and beginDate != ''">
+      <![CDATA[
+        and binding_date>=#{beginDate3}
+      ]]>
+    </if>
+    <if test="endDate != null and endDate != ''">
+      <![CDATA[
+        and binding_date<=#{endDate3}
+      ]]>
+    </if>)
+  </sql>
+  
+  <!-- 获取总用户数 -->
+  <select id="countAllUsers" resultType="int">
+  	select count(*) from user_info where (user_type is null or user_type in (0,1,2,3)) and (country=42 or country is null) 
+  		<![CDATA[
+  			and (province<=35 or province is null) and (email is null or email='')
+  		]]>
+  </select>
+  
+  <!-- 获取今日注册量 -->
+  <select id="countTodayRegUser" parameterType="map" resultType="int">
+  	select count(*) from user_info where reg_time between #{beginDate} 
+  		and #{endDate} and (email ='' or email is null) and (user_type is null or user_type in (0,1,2,3))
+  </select>
+  
+  <!-- 统计今日活跃量 -->
+  <select id="countTodayLoginUser" parameterType="map" resultType="int">
+  	select count(*) from user_extra_info where login_time between #{beginDate} and #{endDate}
+  </select>
+  
+  <!-- 获取网络医院数量 -->
+  <select id="countMonitorHospital" resultType="int">
+  	select count(*) FROM hospital_info where id in(select DISTINCT hospital_id from monitor_admin)
+  </select>
+  
+  <!-- 获取所有医生数量 -->
+  <select id="countHospitalDoctor" resultType="int">
+  	select count(*) from hospital_doctor_info
+  </select>
+  
+  <!-- 免费咨询服务次数 -->
+  <select id="countFreeConsultant" resultType="int">
+  	<!-- select count(*) from hospital_consultant where free=0 -->
+  	select count(DISTINCT consultant_id) from jumper_common.im_message where bus_code=10154 
+  		and (send_chat_id like '%ys%' or send_chat_id like '%yx%')
+  </select>
+  
+  <!-- 图文咨询服务次数 -->
+  <select id="countTuWenConsultant" resultType="int">
+  	<!-- select count(*) from hospital_consultant where free=1 -->
+  	select count(DISTINCT consultant_id) from jumper_common.im_message where bus_code in (10150,10153)
+  		and send_chat_id like '%ys%' and msg_type!='TIMCustomElem'
+  </select>
+  
+  <!-- 私人医生服务次数 -->
+  <select id="countPrivateDoctor" resultType="int">
+  	<!-- select count(*) from hospital_consultant where free=2 -->
+  	select count(DISTINCT consultant_id) from jumper_common.im_message where bus_code=10151
+  		and send_chat_id like '%ys%' and msg_type!='TIMCustomElem'
+  </select>
+  
+  <!-- 获取所有胎心判读服务次数(已解读) -->
+  <select id="countAllHeartRead" resultType="int">
+  	select count(*) from monitor_record_read_order where read_state=1
+  </select>
+  
+  <!-- 获取所有胎心监护服务次数（实时监护） -->
+  <select id="countAllHeartMonitor" resultType="int">
+  	<!-- select IFNULL(sum(monitor_count)-sum(left_count),0) from monitor_order where deal_states!=0 -->
+  	<!-- select count(*) from monitor_order_consumer where state=1 -->
+  	select count(*) from monitor_order_consumer m,monitor_order o where m.monitor_order_id=o.id 
+  		and m.state=1 and remote_type=1
+  </select>
+  
+  <!-- 获取关联某医院的所有用户数 -->
+  <select id="countCommonHospitalUser" parameterType="int" resultType="int">
+  	select count(*) from user_extra_info where common_hospital=#{id}
+  </select>
+  
+  <!-- 获取某一时间段内首次关联某医院的用户数 -->
+  <select id="countfirstBindUser" parameterType="map" resultType="int">
+  	select count(*) from bind_hospital_log where hospital_id=#{hospitalId} 
+  		and first_binding=1 
+  		<if test="beginDate != null and beginDate != ''">
+ 			<![CDATA[
+ 				and binding_date>=#{beginDate}
+ 			]]>
+ 		</if>
+ 		<if test="endDate != null and endDate != ''">
+ 			<![CDATA[
+ 				and binding_date<=#{endDate}
+ 			]]>
+ 		</if>
+  </select>
+  
+  <!-- 体重营养门诊人数 -->
+  <select id="countWeightOutPatient" parameterType="map" resultType="int">
+  	select count(*) from jumper_health_nutrition.hospital_outpatient_record where hospital_id=#{hospitalId} 
+  		<if test="beginDate != null and beginDate != ''">
+ 			<![CDATA[
+ 				and outpatient_time>=#{beginDate}
+ 			]]>
+ 		</if>
+ 		<if test="endDate != null and endDate != ''">
+ 			<![CDATA[
+ 				and outpatient_time<=#{endDate}
+ 			]]>
+ 		</if>
+  </select>
+  
+  <!-- 医院问诊服务次数 -->
+  <select id="countHospConsultant" parameterType="map" resultType="int">
+  	<!-- SELECT count(*) from inq_hospital_consultant where hospital_id=#{hospitalId} 
+  		and status in(3,5) and add_time BETWEEN #{beginDate} and #{endDate} -->
+  		select count(DISTINCT consultant_id) from jumper_common.im_message m,inq_hospital_consultant h where
+  			m.consultant_id=h.id and h.hospital_id=#{hospitalId} and bus_code=50101 and h.status=5
+  				and send_chat_id like '%yy%' and send_time BETWEEN #{beginDate} and #{endDate}
+  </select>
+  
+  <!-- 设备租赁服务次数 -->
+  <select id="countLeaseOrder" parameterType="map" resultType="int">
+  	SELECT count(*) from jumper_lease.lease_order where hospital_id=#{hospitalId} 
+  		and order_status in (1,2,3) 
+  		<if test="beginDate != null and beginDate != ''">
+ 			<![CDATA[
+ 				and create_time>=#{beginDate}
+ 			]]>
+ 		</if>
+ 		<if test="endDate != null and endDate != ''">
+ 			<![CDATA[
+ 				and create_time<=#{endDate}
+ 			]]>
+ 		</if>
+  </select>
+  
+  <!-- 胎心监护服务次数（实时监护） -->
+  <select id="countHeartMonitor" parameterType="map" resultType="int">
+		 select count(*) from monitor_order_consumer m,monitor_order o where m.monitor_order_id=o.id 
+  			and m.state=1 and remote_type=1 and monitor_order_id in(
+				select id from monitor_order where monitor_hospital_id in(SELECT id from monitor_hospital where hospital_id=#{hospitalId}))
+		 		<if test="beginDate != null and beginDate != ''">
+		 			<![CDATA[
+		 				and report_time>=#{beginDate}
+		 			]]>
+		 		</if>
+		 		<if test="endDate != null and endDate != ''">
+		 			<![CDATA[
+		 				and report_time<=#{endDate}
+		 			]]>
+		 		</if>
+		 
+  </select>
+  
+  <!-- 获取总计关联行为次数 -->
+  <select id="countTotalBindUser" parameterType="map" resultType="int">
+  	select count(*) from bind_hospital_log where hospital_id=#{hospitalId} and opration_status=0
+  	<if test="beginDate != null and beginDate != ''">
+ 			<![CDATA[
+ 				and binding_date>=#{beginDate}
+ 			]]>
+ 		</if>
+ 		<if test="endDate != null and endDate != ''">
+ 			<![CDATA[
+ 				and binding_date<=#{endDate}
+ 			]]>
+ 		</if>
+  </select>
+  
+  <!-- 查询医院首次绑定的最早绑定时间 -->
+  <select id="findMinBindingTime" parameterType="int" resultType="String">
+  	select min(binding_date) from bind_hospital_log where first_binding=1 and hospital_id=#{id}
+  </select>
+  
+  <!-- 话题组总数 -->
+  <select id="countTopicGroup" resultType="int">
+  	SELECT COUNT(*) FROM T_IM_TOPIC t WHERE t.IS_DELETE = 0
+  </select>
+
+  <!-- 话题总数 -->
+  <select id="countUserTopic" resultType="int">
+  	<!-- SELECT COUNT(*) FROM T_IM_USER_TOPIC -->
+  	 SELECT COUNT(t.DEBATEPOST_ID) FROM T_IM_DEBATEPOST t INNER JOIN  user_info t1 ON t.DEBATEPOST_USER_ID = t1.id
+  </select>
+
+  <!-- 交流圈总数 -->
+  <select id="countCommunicationGroup" resultType="int">
+  	SELECT COUNT(*) FROM T_IM_COMMUNICATION_GROUP WHERE DATA_STATUS = 1
+  </select>
+
+  <!-- 发言用户总数 -->
+  <select id="countSpeakUser" resultType="int">
+  	select count(DISTINCT user_id) from T_IM_USER_GROUP where SPEAKING_TIME is not null
+  </select>
+
+  <!-- 宝妈日记篇数 -->
+  <select id="countInteractionMoodDiary" resultType="int">
+  	SELECT count(*) from interaction_mood_diary where is_delete=0
+  </select>
+	
+	
+  <!-- 改进版的院区总表数据查询 -->
+  <select id="findAllHospitalList" parameterType="map" resultType="com.jumper.angel.user.statistics.vo.VOAllHospitalStatisticsInfo">
+  	select id, name as hospitalName, 
+  		<include refid="count1"></include> as totalCount, 
+  		<include refid="count2"></include> as dailyAddCount, 
+  		<include refid="count3"></include> as hospConsultantCount,
+  		<include refid="count4"></include> as leaseCount, 
+  		<include refid="count5"></include> as heartMonitorCount, 
+  		<include refid="count6"></include> as weightOutPatientCount, 
+  		<include refid="count7"></include> as sevenDaysAddCount, 
+  		<include refid="count8"></include> as currMonthAddCount  
+  	 from hospital_info h where id in(select DISTINCT hospital_id from monitor_admin)
+  		<if test="keywords!='' and keywords!=null">
+  			and instr(name,#{keywords})
+  		</if>
+  		<if test="province!=0">
+  			and province_id=#{province}
+  		</if>
+  		<if test="city!=0">
+  			and city_id=#{city}
+  		</if>
+  		ORDER BY CONVERT( name USING gbk ) COLLATE gbk_chinese_ci ASC
+  			limit #{beginIndex},#{everyPage}
+  </select>
+  
+  <!-- 查询3.0版本APP注册首次关联医院的用户  -->
+  <select id="countOldAppFirstBind" parameterType="map" resultType="int">
+  	select count(*) from jumper_anglesound.count_detail_info this_ inner join 
+  		jumper_anglesound.count_promot_person countpromo1_ on this_.promot_id=countpromo1_.id 
+  			where this_.is_bind=1 and countpromo1_.hospital_id = #{hospitalId} 
+  			<if test="beginDate != null and beginDate != ''">
+ 			<![CDATA[
+ 				and this_.bind_time>=#{beginDate}
+ 			]]>
+ 		</if>
+ 		<if test="endDate != null and endDate != ''">
+ 			<![CDATA[
+ 				and this_.bind_time<=#{endDate}
+ 			]]>
+ 		</if> 
+  </select>
+  
+</mapper>

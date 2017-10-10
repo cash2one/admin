@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.advertise.mapper.PromotionAdvertisementMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.advertise.entity.PromotionAdvertisement" >
+  	<id column="id" property="id" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+    <result column="web_url" property="webUrl" jdbcType="VARCHAR" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="is_push" property="isPush" jdbcType="INTEGER" />
+    <result column="doc_push" property="docPush" jdbcType="INTEGER" />
+    <result column="is_activity" property="isActivity" jdbcType="INTEGER" />
+    <result column="hospital_id" property="hospitalId" jdbcType="INTEGER" />
+    <result column="is_banner" property="isBanner" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, description, image_url, web_url, add_time, is_push, doc_push, is_activity, hospital_id, is_banner
+  </sql>
+  
+  <!-- 获取广告列表 -->
+  <select id="findAdvertiseList" resultMap="BaseResultMap" parameterType="map">
+  	select *,date_format(add_time,'%Y-%c-%d %H:%i:%s') addTimeStr FROM promotion_advertisement where 1=1
+  		<if test="keywords != null and keywords != ''">
+  			and instr(description,#{keywords})
+  		</if>
+  		order by add_time desc limit #{beginIndex},#{everyPage}
+  </select>
+  
+  <!-- 条件获取常见问题总记录数  -->
+  <select id="findCount" parameterType="map" resultType="int">
+  	select count(*) from promotion_advertisement where 1=1
+  	<if test="keywords != null and keywords != ''">
+  		and instr(description,#{keywords})
+  	</if>
+  </select>
+  
+  <!-- 删除广告信息 -->
+  <delete id="deleteAdvertise" parameterType="int">
+  	delete from promotion_advertisement where id=#{advertiseId}
+  </delete>
+
+  <!-- 添加广告信息 -->
+  <insert id="addAdvertise" parameterType="com.jumper.angel.home.advertise.entity.PromotionAdvertisement" flushCache="true"
+	keyColumn="GENERATED_KEY" keyProperty="id" useGeneratedKeys="true">
+    insert into promotion_advertisement (description, image_url, 
+      web_url, add_time, is_push, 
+      doc_push, is_activity, hospital_id, 
+      is_banner)
+    values (#{description,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR}, 
+      #{webUrl,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP}, #{isPush,jdbcType=INTEGER}, 
+      #{docPush,jdbcType=INTEGER}, #{isActivity,jdbcType=INTEGER}, #{hospitalId,jdbcType=INTEGER}, 
+      #{isBanner,jdbcType=INTEGER})
+  </insert>
+	
+  <!-- 修改广告信息 -->
+  <update id="updateAdvertise" parameterType="com.jumper.angel.home.advertise.entity.PromotionAdvertisement">
+    update promotion_advertisement
+    <set >
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null" >
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="webUrl != null" >
+        web_url = #{webUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isActivity != null" >
+        is_activity = #{isActivity,jdbcType=INTEGER},
+      </if>
+      <if test="isBanner != null" >
+        is_banner = #{isBanner,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

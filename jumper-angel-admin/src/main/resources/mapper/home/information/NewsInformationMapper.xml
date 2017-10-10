@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.information.mapper.NewsInformationMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.information.entity.NewsInformation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="channel_id" property="channelId" jdbcType="INTEGER" />
+    <result column="special_topic_id" property="specialTopicId" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="news_url" property="newsUrl" jdbcType="VARCHAR" />
+    <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+    <result column="is_focus_image" property="isFocusImage" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="clicks" property="clicks" jdbcType="INTEGER" />
+    <result column="is_push" property="isPush" jdbcType="INTEGER" />
+    <result column="introduct" property="introduct" jdbcType="VARCHAR" />
+    <result column="from_logo_url" property="fromLogoUrl" jdbcType="VARCHAR" />
+    <result column="source_from" property="sourceFrom" jdbcType="VARCHAR" />
+    <result column="keywords" property="keywords" jdbcType="VARCHAR" />
+    <result column="is_publish" property="isPublish" jdbcType="INTEGER" />
+    <result column="share_num" property="shareNum" jdbcType="INTEGER" />
+    <result column="praise" property="praise" jdbcType="INTEGER" />
+    <result column="period" property="period" jdbcType="VARCHAR" />
+    <result column="hospital_id" property="hospitalId" jdbcType="INTEGER" />
+    <result column="top" property="top" jdbcType="TIMESTAMP" />
+    <result column="publish_time" property="publishTime" jdbcType="TIMESTAMP" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, channel_id, special_topic_id, title, news_url, image_url, is_focus_image, add_time, 
+    clicks, is_push, introduct, from_logo_url, source_from, keywords, is_publish, share_num, 
+    praise, period, hospital_id, top, publish_time, content
+  </sql>
+  
+  <!-- 获取已发布和未发布新闻总数 -->
+  <select id="findCount" parameterType="map" resultType="int">
+  	select count(*) from news_information where is_publish=#{isPublish} and hospital_id=49 
+  	<if test="chanels!=0">
+  			and channel_id=#{chanels}
+  		</if>
+  		<if test="periods!=0">
+  			and instr(period,#{periods})
+  		</if>
+  		<if test="keywords!=null and keywords!=''">
+  			and instr(title, #{keywords})
+  		</if>
+  </select>
+  
+  <!-- 获取文章列表 -->
+  <select id="findNewsInformationList" parameterType="map" resultMap="BaseResultMap">
+  	select 
+  		<include refid="Base_Column_List"></include>
+  		from news_information where is_publish=#{isPublish} and hospital_id=49 
+  		<if test="chanels!=0">
+  			and channel_id=#{chanels}
+  		</if>
+  		<if test="periods!=0">
+  			and instr(period,#{periods})
+  		</if>
+  		<if test="keywords!=null and keywords!=''">
+  			and instr(title, #{keywords})
+  		</if>
+  		order by add_time desc limit #{beginIndex},#{everyPage}
+  </select>
+  
+  <!-- 修改文章信息 -->
+  <update id="updateNewsInformation" parameterType="com.jumper.angel.home.information.entity.NewsInformation">
+  	update news_information set is_publish=#{isPublish}
+  	<if test="channelId != null and channelId != 0">
+  		,channel_id=#{channelId}
+  	</if>
+  	<if test="title != null and title != ''">
+  		,title=#{title}
+  	</if>
+  	<if test="newsUrl != null and newsUrl != ''">
+  		,news_url=#{newsUrl}
+  	</if>
+  	<if test="imageUrl != null and imageUrl != ''">
+  		,image_url=#{imageUrl}
+  	</if>
+  	<if test="introduct != null and introduct != ''">
+  		,introduct=#{introduct}
+  	</if>
+  	<if test="fromLogoUrl != null and fromLogoUrl != ''">
+  		,from_logo_url=#{fromLogoUrl}
+  	</if>
+  	<if test="sourceFrom != null and sourceFrom != ''">
+  		,source_from=#{sourceFrom}
+  	</if>
+  	<if test="period != null">
+  		,period=#{period}
+  	</if>
+  	<if test="content != null and content != ''">
+  		,content=#{content}
+  	</if>
+  	<if test="top != null and top != ''">
+  		,top=#{top}
+  	</if>
+  	<if test="publishTime != null and publishTime != ''">
+  		,publish_time=#{publishTime}
+  	</if>
+  	 where id=#{id}
+  </update>
+  
+  <!-- 删除文章 -->
+  <delete id="deleteNewsInformation" parameterType="int">
+  	delete from news_information where id=#{newsId}
+  </delete>
+  
+  <!-- 查询文章信息 -->
+  <select id="findNewsInformationById" parameterType="int" resultMap="BaseResultMap">
+  	select 
+  		<include refid="Base_Column_List"></include>
+  		from news_information where id=#{newsId}
+  </select>
+  
+  <!-- 添加文章信息 -->
+  <insert id="addNewsInformation" parameterType="com.jumper.angel.home.information.entity.NewsInformation" 
+  	flushCache="true" keyColumn="GENERATED_KEY" keyProperty="id" useGeneratedKeys="true">
+	  	insert into news_information(channel_id, title, news_url, image_url, add_time, 
+	    	clicks, introduct, from_logo_url, source_from, is_publish, share_num, 
+	   	 	praise, period, content, hospital_id) 
+	   	 values(#{channelId},#{title},#{newsUrl},#{imageUrl},#{addTime},#{clicks},#{introduct},
+	   	 	#{fromLogoUrl},#{sourceFrom},#{isPublish},#{shareNum},#{praise},#{period},#{content},#{hospitalId})
+  </insert>
+  
+  <!-- 修改文章所属频道 -->
+  <update id="updateNewsInformationChannelId" parameterType="map">
+  	update news_information set channel_id=#{newChanelId} where channel_id=#{oldChanelId}
+  </update>
+</mapper>

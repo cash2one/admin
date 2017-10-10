@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.sociality.group.mapper.UserGroupMapper">
+	<resultMap id="PoResultMap" type="com.jumper.angel.sociality.group.model.vo.UserGroupVo">
+		<result column="ID" property="id" />
+		<result column="GROUP_ID" property="groupId" />
+		<result column="USER_ID" property="userId" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="SPEAKING_TIME" property="speakingTime" />
+		<result column="IS_BLACKLIST" property="isBlacklist" />
+		<result column="IS_DELETE" property="isDelete" />
+		<result column="IS_KEEPER" property="isKeeper" />
+		<result column="NICK_NAME" property="nickName" jdbcType="VARCHAR" />
+     	<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+     	<result column="NOTIFY" property="notify" jdbcType="INTEGER" />
+     	<result column="current_identity" property="currentIdentity" jdbcType="INTEGER" />
+     	<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<sql id="Base_Column_List" >
+    	GROUP_ID, USER_ID, CREATE_TIME, SPEAKING_TIME, IS_BLACKLIST, IS_DELETE,IS_DELETE,NICK_NAME,MOBILE
+  	</sql>
+	<update id="updateBU" parameterType="com.jumper.angel.sociality.group.model.po.UserGroupPo">
+  		update T_IM_USER_GROUP
+  		<set>
+			<if test="isBlacklist !=null and isBlacklist >=0">  
+				IS_BLACKLIST = #{isBlacklist,jdbcType=INTEGER} ,
+			</if>
+			<if test="debatepostTime !=null and debatepostTime >0">  
+				IS_KEEPER = #{isKeeper,jdbcType=INTEGER} ,
+			</if>
+			<if test="isDelete !=null and isDelete >0">  
+				IS_DELETE = #{isDelete,jdbcType=BIGINT} ,
+			</if>
+			<if test="isKeeper !=null and isKeeper >=0">
+  				IS_KEEPER = #{isKeeper,jdbcType=BIGINT} ,
+  			</if>
+  		</set>
+  		where USER_ID = #{userId,jdbcType=VARCHAR} 
+  </update>
+
+  <update id="updateByBean" parameterType="com.jumper.angel.sociality.group.model.po.UserGroupPo">
+  		update T_IM_USER_GROUP
+  			<set>
+  				<if test="isBlacklist !=null and isBlacklist >=0">
+  					IS_BLACKLIST = #{isBlacklist,jdbcType=BIGINT} ,
+  				</if>
+  				<if test="isDelete !=null and isDelete >=0">
+  					IS_DELETE = #{isKeeper,jdbcType=BIGINT} ,
+  				</if>
+  				<if test="createTime !=null and createTime >0">
+  					CREATE_TIME = #{createTime,jdbcType=BIGINT} ,
+  				</if>
+  				<if test="speakingTime !=null and speakingTime >0">
+  					SPEAKING_TIME = #{speakingTime,jdbcType=BIGINT} ,
+  				</if>
+  				<if test="isKeeper !=null and isKeeper >=0">
+  					IS_KEEPER = #{isKeeper,jdbcType=INTEGER} ,
+  				</if>
+  				<if test="notify !=null and notify !=''">
+  					NOTIFY = #{notify,jdbcType=INTEGER} ,
+  				</if>
+  				<if test="updateTime !=null and updateTime >0">
+  					UPDATE_TIME = #{updateTime,jdbcType=BIGINT} ,
+  				</if>
+  			</set>
+  		where USER_ID =	#{userId,jdbcType=VARCHAR} AND GROUP_ID = #{groupId,jdbcType=VARCHAR}
+  </update>
+  
+    <select id="selectById" resultMap="PoResultMap" parameterType="java.lang.Integer">
+   	  select GROUP_ID, USER_ID, CREATE_TIME, SPEAKING_TIME, IS_BLACKLIST, IS_DELETE,IS_DELETE from T_IM_USER_GROUP
+   	  where ID = #{id,jdbcType=BIGINT}
+   </select> 
+   
+    
+  <!-- 根据bean对象查询统计话题组 po.UserGroupPo -->
+   <select id="selectUserGroupByPageBean" parameterType="com.jumper.angel.sociality.group.model.vo.UserGroupVo" resultMap="PoResultMap">
+   		select t2.ID,t2.USER_ID,t2.IS_BLACKLIST,t2.CREATE_TIME,t2.IS_KEEPER,t2.SPEAKING_TIME,t2.GROUP_ID,t3.NICK_NAME,t3.MOBILE ,t3.email from  (
+			select  t1.GROUP_NAME,t.ID, t.IS_BLACKLIST, t.IS_DELETE ,t.IS_KEEPER,t.SPEAKING_TIME,t.CREATE_TIME,t.USER_ID,t.GROUP_ID
+ 			from T_IM_USER_GROUP t INNER JOIN T_IM_COMMUNICATION_GROUP t1 on t.GROUP_ID = t1.GROUP_ID   
+   			where t.GROUP_ID=#{groupId,jdbcType=BIGINT}  AND t.IS_DELETE=0
+   			<if test="isBlacklist !=null and isBlacklist >=0">
+   				AND t.IS_BLACKLIST =#{isBlacklist,jdbcType=BIGINT}
+   			</if>
+   			 <if test="isKeeper !=null and isKeeper >=0">
+   				AND t.IS_KEEPER =#{isKeeper,jdbcType=BIGINT}
+   			</if>
+   		)t2 INNER JOIN  user_info t3 on t2.USER_ID = t3.ID 
+   			<where>
+				<if test="nickName !=null and nickName !=''">
+					 t3.NICK_NAME like CONCAT('%', #{nickName,jdbcType=VARCHAR},'%')   
+				</if>
+				<if test="mobile !=null and mobile !=''">
+					or t3.MOBILE like CONCAT('%',#{mobile,jdbcType=VARCHAR},'%')
+				</if>
+			</where>	
+   			ORDER BY t2.CREATE_TIME desc LIMIT #{beginIndex}, #{everyPage}
+   </select>
+  
+  <select id="selectCountUserGroupByBean" parameterType="com.jumper.angel.sociality.group.model.vo.UserGroupVo" resultType="java.lang.Integer">
+  		SELECT count(1) FROM (
+	  		SELECT t2.*,t3.NICK_NAME,t3.MOBILE FROM (
+				SELECT t.ID, t.USER_ID, t.CREATE_TIME,t.SPEAKING_TIME, t.IS_BLACKLIST, t.IS_DELETE, t.IS_KEEPER 
+				FROM T_IM_USER_GROUP t INNER JOIN T_IM_COMMUNICATION_GROUP t1 
+				ON t.GROUP_ID = t1.GROUP_ID 
+	   			WHERE t.GROUP_ID = #{groupId,jdbcType=VARCHAR} AND t.IS_DELETE=0
+	   			<if test="isBlacklist !=null and isBlacklist >=0">
+	   				AND t.IS_BLACKLIST = #{isBlacklist,jdbcType=BIGINT}
+	   			</if>
+	   		   <if test="isKeeper !=null and isKeeper >=0">
+   					AND t.IS_KEEPER = #{isKeeper,jdbcType=BIGINT}
+   			   </if>
+	   		)t2 INNER JOIN  user_info t3 on t2.USER_ID = t3.ID  
+   			<where>
+				<if test="nickName !=null and nickName !=''">
+					 t3.NICK_NAME like CONCAT('%', #{nickName,jdbcType=VARCHAR},'%')   
+				</if>
+				<if test="mobile !=null and mobile !=''">
+					or t3.MOBILE like CONCAT('%',#{mobile,jdbcType=VARCHAR},'%')
+				</if>
+			</where>
+  		) temp
+  </select>
+  
+  <select id="selectUserGroupByPageBean2" parameterType="com.jumper.angel.sociality.group.model.vo.UserGroupVo" resultMap="PoResultMap">
+   		SELECT t2.ID,t2.USER_ID,t2.IS_BLACKLIST,t2.CREATE_TIME,t2.IS_KEEPER,t2.SPEAKING_TIME,t2.GROUP_ID,t3.NICK_NAME,t3.MOBILE ,t3.email,t2.current_identity from  (
+			SELECT  t1.GROUP_NAME,t.ID, t.IS_BLACKLIST, t.IS_DELETE ,t.IS_KEEPER,t.SPEAKING_TIME,t.CREATE_TIME,t.USER_ID,t.GROUP_ID,e.current_identity
+ 			FROM T_IM_USER_GROUP t 
+ 			INNER JOIN T_IM_COMMUNICATION_GROUP t1 ON t.GROUP_ID = t1.GROUP_ID 
+ 			INNER JOIN   user_extra_info e ON t.USER_ID=e.user_id
+   			WHERE t.GROUP_ID=#{groupId,jdbcType=BIGINT}  AND t.IS_DELETE=0
+   			<if test="isBlacklist !=null and isBlacklist >=0">
+   				AND t.IS_BLACKLIST =#{isBlacklist,jdbcType=BIGINT}
+   			</if>
+   			 <if test="isKeeper !=null and isKeeper ==0">
+   				AND t.IS_KEEPER =#{isKeeper,jdbcType=BIGINT}
+   			</if>
+   			<if test="currentIdentity !=null and isKeeper >=0">
+   				AND e.current_identity =#{currentIdentity,jdbcType=BIGINT}
+   			</if>
+   		)t2 INNER JOIN  user_info t3 ON t2.USER_ID = t3.ID 
+   			<where>
+				<if test="nickName !=null and nickName !=''">
+					 t3.NICK_NAME like CONCAT('%', #{nickName,jdbcType=VARCHAR},'%')   
+				</if>
+				<if test="mobile !=null and mobile !=''">
+					OR t3.MOBILE like CONCAT('%',#{mobile,jdbcType=VARCHAR},'%')
+				</if>
+			</where>	
+   			ORDER BY t2.CREATE_TIME DESC LIMIT #{beginIndex}, #{everyPage}
+   </select>
+   
+   <select id="selectCountUserGroupByBean2" parameterType="com.jumper.angel.sociality.group.model.vo.UserGroupVo" resultType="java.lang.Integer">
+  		SELECT COUNT(1) FROM (
+	  		SELECT t2.*,t3.NICK_NAME,t3.MOBILE FROM (
+				SELECT t.ID, t.USER_ID, t.CREATE_TIME,t.SPEAKING_TIME, t.IS_BLACKLIST, t.IS_DELETE, t.IS_KEEPER 
+				FROM T_IM_USER_GROUP t 
+				INNER JOIN T_IM_COMMUNICATION_GROUP t1 ON t.GROUP_ID = t1.GROUP_ID 
+	   			INNER JOIN   user_extra_info e ON t.USER_ID=e.user_id
+	   			WHERE t.GROUP_ID=#{groupId,jdbcType=VARCHAR} AND t.IS_DELETE=0
+	   			<if test="isBlacklist !=null and isBlacklist >=0">
+	   				AND t.IS_BLACKLIST =#{isBlacklist,jdbcType=BIGINT}
+	   			</if>
+	   		   <if test="isKeeper !=null and isKeeper >=0">
+   					AND t.IS_KEEPER =#{isKeeper,jdbcType=BIGINT}
+   			   </if>
+   			   <if test="currentIdentity !=null and isKeeper >=0">
+   					AND e.current_identity =#{currentIdentity,jdbcType=BIGINT}
+   				</if>
+	   		)t2 INNER JOIN  user_info t3 ON t2.USER_ID = t3.ID  
+   			<where>
+				<if test="nickName !=null and nickName !=''">
+					 t3.NICK_NAME like CONCAT('%', #{nickName,jdbcType=VARCHAR},'%')   
+				</if>
+				<if test="mobile !=null and mobile !=''">
+					or t3.MOBILE like CONCAT('%',#{mobile,jdbcType=VARCHAR},'%')
+				</if>
+			</where>
+  		) temp
+  </select>
+  
+     <update id="updates" parameterType="com.jumper.angel.sociality.group.model.po.UserGroupPo">
+  		update T_IM_USER_GROUP
+  		<set>
+			<if test="isBlacklist !=null and isBlacklist >=0">  
+				IS_BLACKLIST = #{isBlacklist,jdbcType=INTEGER} ,
+			</if>
+			<if test="debatepostTime !=null and debatepostTime >0">  
+				IS_KEEPER = #{isKeeper,jdbcType=INTEGER} ,
+			</if>
+			<if test="isDelete !=null and isDelete >0">  
+				IS_DELETE = #{isDelete,jdbcType=BIGINT} ,
+			</if>
+			<if test="isKeeper !=null and isKeeper >=0">
+  				IS_KEEPER = #{isKeeper,jdbcType=BIGINT} ,
+  			</if>
+  		</set>
+  		where ID = #{id,jdbcType=BIGINT} 
+  </update>
+  
+
+  
+  
+  <!-- 查询userinfo里面 的 数据 -->
+  <select id="selUserinfo" parameterType="com.jumper.angel.sociality.group.model.po.UserGroupPo" 
+  	resultType="com.jumper.angel.sociality.group.model.vo.UserinfoVo">
+		SELECT 	t.id AS id,
+			t.mobile AS mobile,
+			t.email AS email,
+			t.nick_name AS nickName, 
+		  	t.country AS country,
+		  	t.province AS province,
+		  	t.city AS city, 
+		  	t.user_img AS userImg,
+		  	t.expected_date_of_confinement AS expectedDateOfConfinement,
+		  	t.status AS status,
+		  	t.reg_time AS regtime, 
+		 	t.password AS password,
+		 	t.open_id AS openId,
+			t.user_type AS userType,
+			t.gold AS gold,
+			t.pregnant_stage AS pregnantStage,
+			t.pregnant_week AS pregnant_week,
+			t.sina_open_id AS sinaOpenId,
+			t.qq_open_id AS qqOpenId,
+			t.weixin_open_id AS weixinOpenId ,
+			t.medical_num AS medicalNum
+		 from user_info t  INNER JOIN T_IM_USER_GROUP t2 on t.id=t2.user_id
+		 <where>
+		 	<if test="groupId !=null and groupId !=''">
+		 		GROUP_ID = #{groupId,jdbcType=VARCHAR}
+		 	</if>
+		 	<if test="userId !=null and userId !=''">
+		 		and t.id = #{userId,jdbcType=VARCHAR}
+		 	</if>
+		 </where>
+  </select>
+  <insert id="add" parameterType="com.jumper.angel.sociality.group.model.po.UserGroupPo" >
+  		insert into T_IM_USER_GROUP
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="userId != null">
+				USER_ID,
+			</if>
+			<if test="groupId != null">
+				GROUP_ID,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="speakingTime != null">
+				SPEAKING_TIME,
+			</if>
+			<if test="isBlacklist != null">
+				IS_BLACKLIST,
+			</if>
+			<if test="isDelete != null">
+				IS_DELETE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="groupId != null">
+				#{groupId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=BIGINT},
+			</if>
+			<if test="speakingTime != null">
+				#{speakingTime,jdbcType=BIGINT},
+			</if>
+			<if test="isBlacklist != null">
+				#{isBlacklist,jdbcType=BIGINT},
+			</if>
+			<if test="isDelete != null">
+				#{isDelete,jdbcType=BIGINT},
+			</if>
+		</trim>
+	</insert>
+  
+<!--     查询dao里面 的 数据模糊查询T_IM_COMMUNICATION_GROUP   -->
+  <select id="selUserInfovague" parameterType="com.jumper.angel.sociality.group.model.po.SocialityGroupPo" resultType="com.jumper.angel.sociality.group.model.po.SocialityGroupPo">
+	SELECT 	t.ID AS id,
+			t.GROUP_ID AS groupId,
+			t.GROUP_NAME as groupName,
+			t.GROUP_BRIEF_INTR as property,
+		  	t.GROUP_IMG_URL as groupImgUrl,
+		 	t.PEOPLE_NUMBER as peopleNumber,
+			t.OVERHEAD as overhead,
+			t.DATA_STATUS as dataStatus,
+			t.CREATE_USER_ID as createUserId,
+			t.CREATE_USER_TIME as createUserTime,
+			t.ALLOW_ADD as allowAdd From T_IM_COMMUNICATION_GROUP t
+		<where>
+				<if test="groupName !=null and groupName !=''">
+					GROUP_NAME like '${groupName}%'
+				</if>
+		</where>	
+  </select>
+  
+	<update id="updateSpeakingTime" parameterType="com.jumper.angel.sociality.group.model.po.UserGroupPo">
+		UPDATE T_IM_USER_GROUP SET SPEAKING_TIME = #{speakingTime,jdbcType=BIGINT} 
+		WHERE USER_ID = #{userId,jdbcType=VARCHAR} AND GROUP_ID = #{groupId,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 批量更新 -->	
+	<update id="updateSpeakingTimes" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" >  
+	    	
+	    	UPDATE T_IM_USER_GROUP SET SPEAKING_TIME = #{item.speakingTime,jdbcType=BIGINT} 
+			WHERE USER_ID = #{item.userId,jdbcType=VARCHAR} AND GROUP_ID = #{item.groupId,jdbcType=VARCHAR};
+	    	  
+	    </foreach> 
+	</update>
+	
+	<!-- 当前交流圈人数 -->
+	<select id="currentGroupCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+		SELECT 
+			COUNT(*) 
+		FROM T_IM_USER_GROUP t 
+		WHERE t.IS_DELETE = '0' 
+		AND t.GROUP_ID = #{groupId,jdbcType=VARCHAR};
+	</select>
+	
+	<!-- 今日当前交流圈新增人数 -->
+	<select id="currentGroupIncreaseCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+		SELECT 
+			COUNT(*) 
+		FROM T_IM_USER_GROUP t 
+		WHERE t.IS_DELETE = '0' 
+		AND FROM_UNIXTIME(t.CREATE_TIME/1000,'%Y-%m-%d') = FROM_UNIXTIME(UNIX_TIMESTAMP(NOW()),'%Y-%m-%d')
+		AND t.GROUP_ID = #{groupId,jdbcType=VARCHAR};
+	</select>
+	
+	<!-- 今日当前交流圈发言人数 -->
+	<select id="currentGroupSpeakCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+		SELECT 
+			COUNT(*) 
+		FROM T_IM_USER_GROUP t 
+		WHERE FROM_UNIXTIME(t.SPEAKING_TIME/1000,'%Y-%m-%d') = FROM_UNIXTIME(UNIX_TIMESTAMP(NOW()),'%Y-%m-%d')
+		AND t.GROUP_ID = #{groupId,jdbcType=VARCHAR};
+	</select>
+	
+	<!-- 查询user_extra_info表获取当前身份 -->
+	<select  id="getIdentity" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+	      SELECT current_identity FROM user_extra_info WHERE user_id = #{userId}
+	</select>
+</mapper>

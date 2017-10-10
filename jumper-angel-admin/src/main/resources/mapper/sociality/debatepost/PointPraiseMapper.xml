@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.sociality.debatepost.mapper.PointPraiseMapper" >
+  <resultMap id="BaseResultMap" type="com.jumper.angel.sociality.debatepost.model.po.PointPraisePO">
+    <id column="POINT_PRAISE_ID" property="pointPraiseId" jdbcType="BIGINT" />
+    <result column="POINT_PRAISE_USER_ID" property="pointPraiseUserId" jdbcType="VARCHAR" />
+    <result column="DEBATEPOST_ID" property="debatepostId" jdbcType="BIGINT" />
+    <result column="CREDTE_DATE" property="credteDate" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    POINT_PRAISE_ID, POINT_PRAISE_USER_ID, DEBATEPOST_ID, CREDTE_DATE
+  </sql>
+  <!-- 点赞 -->
+   <insert id="insert" parameterType="com.jumper.angel.sociality.debatepost.model.po.PointPraisePO" >
+    insert into 
+    	T_IM_POINT_PRAISE (POINT_PRAISE_ID, POINT_PRAISE_USER_ID, DEBATEPOST_ID, CREDTE_DATE)
+    values 
+    	(#{pointPraiseId,jdbcType=BIGINT}, #{pointPraiseUserId,jdbcType=VARCHAR}, #{debatepostId,jdbcType=BIGINT}, #{credteDate,jdbcType=BIGINT})
+  </insert>
+  
+  <select id="selectByUser" resultType="int" parameterType="com.jumper.angel.sociality.debatepost.model.po.PointPraisePO" >
+    select 
+        count(*)
+    from T_IM_POINT_PRAISE
+    where 
+    	 DEBATEPOST_ID = #{debatepostId,jdbcType=VARCHAR}
+    	and POINT_PRAISE_USER_ID = #{pointPraiseUserId,jdbcType=BIGINT}
+  </select>
+  
+  <delete id="delete" parameterType="com.jumper.angel.sociality.debatepost.model.po.PointPraisePO" >
+    delete from 
+    	T_IM_POINT_PRAISE
+    where 
+    	DEBATEPOST_ID = #{debatepostId,jdbcType=VARCHAR}
+    	and POINT_PRAISE_USER_ID = #{pointPraiseUserId,jdbcType=BIGINT}
+    	
+  </delete>
+</mapper>

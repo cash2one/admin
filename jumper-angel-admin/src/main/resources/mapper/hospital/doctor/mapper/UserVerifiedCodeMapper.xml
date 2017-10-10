@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.hospital.doctor.mapper.UserVerifiedCodeMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.doctor.entity.UserVerifiedCode" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, mobile, add_time, code
+  </sql>
+  
+  <!-- 查询用户验证码信息 -->
+  <select id="findUserVerifiedCode" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+  	select
+  		<include refid="Base_Column_List"></include>
+  	from user_verified_code
+  	<if test="mobile!=null and mobile!=''">
+  		where mobile like CONCAT('%', #{mobile}, '%')
+  	</if>
+  	order by add_time desc limit #{beginIndex}, #{everyPage}
+  </select>
+  
+  <!-- 查询总记录数 -->
+  <select id="findCount" resultType="Integer" parameterType="String">
+  	select
+  		count(1)
+  	from user_verified_code
+  	<if test="value!=null and value!=''">
+  		where mobile like CONCAT('%', #{mobile}, '%')
+  	</if>
+  </select>
+  
+</mapper>

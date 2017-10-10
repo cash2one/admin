@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.login.mapper.MonitorAdminMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.login.entity.MonitorAdmin" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="is_enabled" property="isEnabled" jdbcType="BIT" />
+    <result column="is_locked" property="isLocked" jdbcType="BIT" />
+    <result column="locked_date" property="lockedDate" jdbcType="TIMESTAMP" />
+    <result column="login_date" property="loginDate" jdbcType="TIMESTAMP" />
+    <result column="login_failure_count" property="loginFailureCount" jdbcType="INTEGER" />
+    <result column="login_ip" property="loginIp" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="hospital_id" property="hospitalId" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="is_father" property="isFather" jdbcType="BIT" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="major_id" property="majorId" jdbcType="INTEGER" />
+    <result column="title_id" property="titleId" jdbcType="INTEGER" />
+    <result column="doctormajor_id" property="doctormajorId" jdbcType="INTEGER" />
+    <result column="introduction" property="introduction" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="is_hospital_nst" jdbcType="BIT" property="isHospitalNst" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, email, is_enabled, is_locked, locked_date, login_date, login_failure_count, login_ip, 
+    name, password, hospital_id, username, is_father, add_time, major_id, title_id, doctormajor_id, 
+    introduction, mobile,is_hospital_nst
+  </sql>
+  
+  <!-- 查询用户信息 -->
+  <select id="findMonitorAdmin" resultMap="BaseResultMap" parameterType="String">
+  	select
+  		<include refid="Base_Column_List"></include>
+	from monitor_admin where username=#{value}
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.jumper.angel.home.login.entity.MonitorAdmin">
+    insert into monitor_admin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">        		id,      </if>
+      <if test="email != null">        		email,      </if>
+      <if test="isEnabled != null">        	is_enabled,      </if>
+      <if test="isLocked != null">        	is_locked,      </if>
+      <if test="lockedDate != null">        locked_date,      </if>
+      <if test="loginDate != null">			login_date,      </if>
+      <if test="loginFailureCount != null">	login_failure_count,      </if>
+      <if test="loginIp != null">        	login_ip,      </if>
+      <if test="name != null">        		name,      </if>
+      <if test="password != null">        	password,      </if>
+      <if test="hospitalId != null">        hospital_id,      </if>
+      <if test="username != null">        	username,      </if>
+      <if test="isFather != null">        	is_father,      </if>
+      <if test="addTime != null">        	add_time,      </if>
+      <if test="majorId != null">        	major_id,      </if>
+      <if test="titleId != null">        	title_id,      </if>
+      <if test="doctormajorId != null">     doctormajor_id,      </if>
+      <if test="introduction != null">      introduction,      </if>
+      <if test="mobile != null">        	mobile,      </if>
+      <if test="isHospitalNst != null">     is_hospital_nst,      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">        		#{id,jdbcType=INTEGER},      </if>
+      <if test="email != null">        		#{email,jdbcType=VARCHAR},      </if>
+      <if test="isEnabled != null">        	#{isEnabled,jdbcType=BIT},      </if>
+      <if test="isLocked != null">        	#{isLocked,jdbcType=BIT},      </if>
+      <if test="lockedDate != null">        #{lockedDate,jdbcType=TIMESTAMP},      </if>
+      <if test="loginDate != null">        	#{loginDate,jdbcType=TIMESTAMP},      </if>
+      <if test="loginFailureCount != null"> #{loginFailureCount,jdbcType=INTEGER},      </if>
+      <if test="loginIp != null">        	#{loginIp,jdbcType=VARCHAR},      </if>
+      <if test="name != null">        		#{name,jdbcType=VARCHAR},      </if>
+      <if test="password != null">        	#{password,jdbcType=VARCHAR},      </if>
+      <if test="hospitalId != null">        #{hospitalId,jdbcType=INTEGER},      </if>
+      <if test="username != null">        	#{username,jdbcType=VARCHAR},      </if>
+      <if test="isFather != null">        	#{isFather,jdbcType=BIT},      </if>
+      <if test="addTime != null">        	#{addTime,jdbcType=TIMESTAMP},      </if>
+      <if test="majorId != null">        	#{majorId,jdbcType=INTEGER},      </if>
+      <if test="titleId != null">        	#{titleId,jdbcType=INTEGER},      </if>
+      <if test="doctormajorId != null">     #{doctormajorId,jdbcType=INTEGER},      </if>
+      <if test="introduction != null">      #{introduction,jdbcType=VARCHAR},      </if>
+      <if test="mobile != null">        	#{mobile,jdbcType=VARCHAR},      </if>
+      <if test="isHospitalNst != null">     #{isHospitalNst,jdbcType=BIT},      </if>
+    </trim>
+  </insert>
+  
+  <select id="selectByUserName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from monitor_admin
+    where username = #{userName}
+  </select>
+  <select id="selectByMobile" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from monitor_admin
+    where mobile = #{mobile}
+  </select>
+  
+  <select id="selectByHospitalId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from monitor_admin
+    where hospital_id = #{hospitalId} and is_father = 1
+  </select>
+  
+  <update id="updateAccount" >
+  	UPDATE `monitor_admin` SET username = #{userName}
+  	<if test="password != null">,password = #{password}</if> 
+  	<if test="status == 0">,is_locked = #{status}</if> 
+  	<if test="isEnabled == 1">,is_enabled = 1</if> 
+  	WHERE is_father = 1 AND id = #{monitorId}
+  </update>
+  <update id="updateIsEnabled" >
+  	update `monitor_admin` set is_enabled = #{isEnabled} where hospital_id = #{hospitalId}
+  </update>
+  
+  <insert id="insertRole" parameterType="com.jumper.angel.hospital.hospital.entity.MonitorAdminRoleKey">
+    insert into monitor_admin_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="admins != null">       admins,      </if>
+      <if test="roles != null">        roles,      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="admins != null">       #{admins,jdbcType=INTEGER},      </if>
+      <if test="roles != null">        #{roles,jdbcType=INTEGER},      </if>
+    </trim>
+  </insert>
+  
+</mapper>

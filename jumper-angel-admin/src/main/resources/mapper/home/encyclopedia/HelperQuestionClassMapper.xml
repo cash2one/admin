@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.encyclopedia.mapper.HelperQuestionClassMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.encyclopedia.entity.HelperQuestionClass" >
+  	<result column="id" property="id" jdbcType="INTEGER"/>
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="is_visible" property="isVisible" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, name, is_visible, add_time, date_format(add_time,'%Y-%c-%d %H:%i:%s') classAddTime
+  </sql>
+  
+  <!-- 获取孕期百科常见问题类型 -->
+  <select id="getAllQuestionClass" resultMap="BaseResultMap">
+  	select
+  		<include refid="Base_Column_List"></include> 
+  	 from helper_question_class where is_visible=0 order by add_time desc
+  </select>
+  
+  <!-- 条件查询总记录数 -->
+  <select id="findCount" parameterType="map" resultType="int">
+  	select count(*) from helper_question_class
+  		<if test="keywords != null and keywords != ''">
+  			where instr(name,#{keywords})
+  		</if>
+  </select>
+  
+  <!-- 条件获取模块分页数据 -->
+  <select id="findQuestionClassList" parameterType="map" resultMap="BaseResultMap">
+  	select 
+  		<include refid="Base_Column_List"></include>
+  			from helper_question_class
+  			<if test="keywords != null and keywords != ''">
+  				where instr(name,#{keywords})
+  			</if>
+  			order by add_time desc limit #{beginIndex},#{everyPage}
+  </select>
+  
+  <!-- 通过模块名查询模块信息 -->
+  <select id="findQuestionClassByName" parameterType="com.jumper.angel.home.encyclopedia.entity.HelperQuestionClass" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"></include>
+  			from helper_question_class where name=#{name} and id!=#{id}
+  </select>
+  
+  <!-- 添加模块信息 -->
+  <insert id="addQuestionClass" parameterType="com.jumper.angel.home.encyclopedia.entity.HelperQuestionClass"
+  	flushCache="true" keyColumn="GENERATED_KEY" keyProperty="id" useGeneratedKeys="true">
+  		insert into helper_question_class(name, is_visible, add_time) values(#{name},#{isVisible},#{addTime})
+  </insert>
+  
+  <!-- 修改模块信息 -->
+  <update id="updateQuestionClass" parameterType="com.jumper.angel.home.encyclopedia.entity.HelperQuestionClass">
+  	update helper_question_class set name=#{name},is_visible=#{isVisible} where id=#{id}
+  </update>
+  
+  <!-- 删除模块信息 -->
+  <delete id="deleteQuestionClass" parameterType="int">
+  	delete from helper_question_class where id=#{classId}
+  </delete>
+  
+</mapper>

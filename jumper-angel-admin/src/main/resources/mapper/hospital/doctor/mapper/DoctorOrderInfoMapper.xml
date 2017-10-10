@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.hospital.doctor.mapper.DoctorOrderInfoMapper">
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.doctor.entity.DoctorOrderInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="doctor_id" jdbcType="INTEGER" property="doctorId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="service_id" jdbcType="INTEGER" property="serviceId" />
+    <result column="buy_cost" jdbcType="VARCHAR" property="buyCost" />
+    <result column="service_start_time" jdbcType="VARCHAR" property="serviceStartTime" />
+    <result column="service_end_time" jdbcType="VARCHAR" property="serviceEndTime" />
+    <result column="order_status" jdbcType="VARCHAR" property="orderStatus" />
+    <result column="pay_status" jdbcType="VARCHAR" property="payStatus" />
+    <result column="add_time" jdbcType="VARCHAR" property="addTime" />
+    <result column="buy_time_type" jdbcType="VARCHAR" property="buyTimeType" />
+    <result column="service_type" jdbcType="VARCHAR" property="serviceType" />
+    <result column="consultant_id" jdbcType="INTEGER" property="consultantId" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="pay_order_no" jdbcType="VARCHAR" property="payOrderNo" />
+    <result column="send_type" jdbcType="INTEGER" property="sendType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, doctor_id, user_id, service_id, buy_cost, service_start_time, service_end_time, 
+    order_status, pay_status, add_time, buy_time_type, service_type, consultant_id, order_no, 
+    pay_order_no, send_type
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from doctor_order_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from doctor_order_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jumper.angel.hospital.doctor.entity.DoctorOrderInfo">
+    insert into doctor_order_info (id, doctor_id, user_id, 
+      service_id, buy_cost, service_start_time, 
+      service_end_time, order_status, pay_status, 
+      add_time, buy_time_type, service_type, 
+      consultant_id, order_no, pay_order_no, 
+      send_type)
+    values (#{id,jdbcType=INTEGER}, #{doctorId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+      #{serviceId,jdbcType=INTEGER}, #{buyCost,jdbcType=VARCHAR}, #{serviceStartTime,jdbcType=VARCHAR}, 
+      #{serviceEndTime,jdbcType=VARCHAR}, #{orderStatus,jdbcType=VARCHAR}, #{payStatus,jdbcType=VARCHAR}, 
+      #{addTime,jdbcType=VARCHAR}, #{buyTimeType,jdbcType=VARCHAR}, #{serviceType,jdbcType=VARCHAR}, 
+      #{consultantId,jdbcType=INTEGER}, #{orderNo,jdbcType=VARCHAR}, #{payOrderNo,jdbcType=VARCHAR}, 
+      #{sendType,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jumper.angel.hospital.doctor.entity.DoctorOrderInfo">
+    insert into doctor_order_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">        id,      </if>
+      <if test="doctorId != null">        doctor_id,      </if>
+      <if test="userId != null">        user_id,      </if>
+      <if test="serviceId != null">        service_id,      </if>
+      <if test="buyCost != null">        buy_cost,      </if>
+      <if test="serviceStartTime != null">        service_start_time,      </if>
+      <if test="serviceEndTime != null">        service_end_time,      </if>
+      <if test="orderStatus != null">        order_status,      </if>
+      <if test="payStatus != null">        pay_status,      </if>
+      <if test="addTime != null">        add_time,      </if>
+      <if test="buyTimeType != null">        buy_time_type,      </if>
+      <if test="serviceType != null">        service_type,      </if>
+      <if test="consultantId != null">        consultant_id,      </if>
+      <if test="orderNo != null">        order_no,      </if>
+      <if test="payOrderNo != null">        pay_order_no,      </if>
+      <if test="sendType != null">        send_type,      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">        #{id,jdbcType=INTEGER},      </if>
+      <if test="doctorId != null">        #{doctorId,jdbcType=INTEGER},      </if>
+      <if test="userId != null">        #{userId,jdbcType=INTEGER},      </if>
+      <if test="serviceId != null">        #{serviceId,jdbcType=INTEGER},      </if>
+      <if test="buyCost != null">        #{buyCost,jdbcType=VARCHAR},      </if>
+      <if test="serviceStartTime != null">        #{serviceStartTime,jdbcType=VARCHAR},      </if>
+      <if test="serviceEndTime != null">        #{serviceEndTime,jdbcType=VARCHAR},      </if>
+      <if test="orderStatus != null">        #{orderStatus,jdbcType=VARCHAR},      </if>
+      <if test="payStatus != null">        #{payStatus,jdbcType=VARCHAR},      </if>
+      <if test="addTime != null">        #{addTime,jdbcType=VARCHAR},      </if>
+      <if test="buyTimeType != null">        #{buyTimeType,jdbcType=VARCHAR},      </if>
+      <if test="serviceType != null">        #{serviceType,jdbcType=VARCHAR},      </if>
+      <if test="consultantId != null">        #{consultantId,jdbcType=INTEGER},      </if>
+      <if test="orderNo != null">        #{orderNo,jdbcType=VARCHAR},      </if>
+      <if test="payOrderNo != null">        #{payOrderNo,jdbcType=VARCHAR},      </if>
+      <if test="sendType != null">        #{sendType,jdbcType=INTEGER},      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jumper.angel.hospital.doctor.entity.DoctorOrderInfo">
+    update doctor_order_info
+    <set>
+      <if test="doctorId != null">        doctor_id = #{doctorId,jdbcType=INTEGER},      </if>
+      <if test="userId != null">        user_id = #{userId,jdbcType=INTEGER},      </if>
+      <if test="serviceId != null">        service_id = #{serviceId,jdbcType=INTEGER},      </if>
+      <if test="buyCost != null">        buy_cost = #{buyCost,jdbcType=VARCHAR},      </if>
+      <if test="serviceStartTime != null">        service_start_time = #{serviceStartTime,jdbcType=VARCHAR},      </if>
+      <if test="serviceEndTime != null">        service_end_time = #{serviceEndTime,jdbcType=VARCHAR},      </if>
+      <if test="orderStatus != null">        order_status = #{orderStatus,jdbcType=VARCHAR},      </if>
+      <if test="payStatus != null">        pay_status = #{payStatus,jdbcType=VARCHAR},      </if>
+      <if test="addTime != null">        add_time = #{addTime,jdbcType=VARCHAR},      </if>
+      <if test="buyTimeType != null">        buy_time_type = #{buyTimeType,jdbcType=VARCHAR},      </if>
+      <if test="serviceType != null">        service_type = #{serviceType,jdbcType=VARCHAR},      </if>
+      <if test="consultantId != null">        consultant_id = #{consultantId,jdbcType=INTEGER},      </if>
+      <if test="orderNo != null">        order_no = #{orderNo,jdbcType=VARCHAR},      </if>
+      <if test="payOrderNo != null">        pay_order_no = #{payOrderNo,jdbcType=VARCHAR},      </if>
+      <if test="sendType != null">        send_type = #{sendType,jdbcType=INTEGER},      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jumper.angel.hospital.doctor.entity.DoctorOrderInfo">
+    update doctor_order_info
+    set doctor_id = #{doctorId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      service_id = #{serviceId,jdbcType=INTEGER},
+      buy_cost = #{buyCost,jdbcType=VARCHAR},
+      service_start_time = #{serviceStartTime,jdbcType=VARCHAR},
+      service_end_time = #{serviceEndTime,jdbcType=VARCHAR},
+      order_status = #{orderStatus,jdbcType=VARCHAR},
+      pay_status = #{payStatus,jdbcType=VARCHAR},
+      add_time = #{addTime,jdbcType=VARCHAR},
+      buy_time_type = #{buyTimeType,jdbcType=VARCHAR},
+      service_type = #{serviceType,jdbcType=VARCHAR},
+      consultant_id = #{consultantId,jdbcType=INTEGER},
+      order_no = #{orderNo,jdbcType=VARCHAR},
+      pay_order_no = #{payOrderNo,jdbcType=VARCHAR},
+      send_type = #{sendType,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectServiceTypeByConsultantId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select service_type from doctor_order_info where consultant_id = #{consultantId}
+  </select>
+  
+   <select id="findAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from doctor_order_info
+  </select>
+  
+  
+  
+  
+  
+  
+</mapper>

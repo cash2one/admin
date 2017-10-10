@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.sociality.diary.mapper.DiaryMapper">
+	<!-- Result Map com.jumper.angel.sociality.diary.model.po.DiaryPo" -->
+	<resultMap id="PoResultMap" type="com.jumper.angel.sociality.diary.model.po.DiaryPo">
+		<result column="id" property="id" />
+		<result column="content" property="content" />
+		<result column="img_url" property="imgUrl" />
+		<result column="add_time" property="addTime" />
+		<result column="is_delete" property="isDelete" />
+		<result column="user_id" property="userId" />
+		<result column="user_name" property="userName" />
+		<result column="mood_expression" property="moodExpression" />
+		<result column="pregnant_week_id" property="pregnantWeekId" />
+	</resultMap>
+
+	<!-- Result Map com.jumper.angel.sociality.diary.model.bo.DiaryBo -->
+	<resultMap id="BoResultMap" type="com.jumper.angel.sociality.diary.model.bo.DiaryBo">
+		<result column="id" property="id" />
+		<result column="content" property="content" />
+		<result column="img_url" property="imgUrl" />
+		<result column="add_time" property="addTime" />
+		<result column="is_delete" property="isDelete" />
+		<result column="user_id" property="userId" />
+		<result column="user_name" property="userName" />
+		<result column="mood_expression" property="moodExpression" />
+		<result column="pregnant_week_id" property="pregnantWeekId" />
+	</resultMap>
+
+	<!-- interaction_mood_diary table all fields -->
+	<sql id="Po_Column_List">
+		interaction_mood_diary.id, interaction_mood_diary.content, interaction_mood_diary.img_url, interaction_mood_diary.add_time, 
+		interaction_mood_diary.is_delete, interaction_mood_diary.user_id, interaction_mood_diary.mood_expression, 
+		interaction_mood_diary.pregnant_week_id, user_info.nick_name user_name 
+	</sql>
+	<sql id="Po_Column_List1">
+		id, content, img_url, add_time, is_delete, user_id, mood_expression, pregnant_week_id
+	</sql>
+
+	<!-- 查询条件 -->
+	<sql id="Po_Where_Clause">
+		<where>
+			<if test="id != null and id != '' "> and id=#{id}
+			</if>
+			<if test="content != null  and content != '' ">
+				and content like '%${content}%'
+			</if>
+			<if test="imgUrl != null  and imgUrl != '' ">
+				and img_url like '%${imgUrl}%'
+			</if>
+			<if test="addTime != null  ">
+				and add_time=#{addTime}
+			</if>
+			<if test="isDelete != null  ">
+				and is_delete=#{isDelete}
+			</if>
+			<if test="userId != null and userId != '' ">
+				and user_id=#{userId}
+			</if>
+			<if test="moodExpression != null  ">
+				and mood_expression=#{moodExpression}
+			</if>
+			<if test="pregnantWeekId != null  ">
+				and pregnant_week_id=#{pregnantWeekId}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 宝妈日记 列表总数 -->
+	<select id="getCount" resultType="java.lang.Integer"
+		parameterType="com.jumper.angel.sociality.diary.model.vo.DiaryVo">
+		SELECT 
+			count(1) 
+		from interaction_mood_diary, user_info 
+		WHERE interaction_mood_diary.user_id = user_info.id AND is_delete =0
+		<if test="userId != null and userId != '' ">
+			and interaction_mood_diary.user_id = #{userId}
+		</if>
+		<if test="userName != null and userName != '' ">
+			and user_info.nick_name like CONCAT('%',#{userName},'%') 
+		</if>
+	</select>
+
+	<!-- 查询宝妈日记列表 -->
+	<select id="getByKeywords" resultMap="BoResultMap" parameterType="com.jumper.angel.sociality.diary.model.vo.DiaryVo">
+		SELECT 
+		<include refid="Po_Column_List" /> 
+		from interaction_mood_diary, user_info where interaction_mood_diary.user_id = user_info.id 
+		AND interaction_mood_diary.is_delete = 0 
+		<if test="userId != null and userId != '' ">
+			and interaction_mood_diary.user_id = #{userId}
+		</if>
+		<if test="userName != null and userName != '' ">
+			and user_info.nick_name like CONCAT('%',#{userName},'%') 
+		</if>
+		order by interaction_mood_diary.add_time desc limit #{beginIndex},#{everyPage}
+	</select>
+
+	<!-- 查询当前日记总数 -->
+	<select id="getDiaryMaxUser" resultType="java.lang.Integer"  
+		parameterType="com.jumper.angel.sociality.diary.model.vo.DiaryVo">
+		SELECT COUNT(id) FROM interaction_mood_diary 
+		<include refid="Po_Where_Clause" />
+	</select>
+	
+	<!-- 查询近30新增日记总数 -->
+	<select id="getLatelyDiaryCount" resultType="java.lang.Integer" >
+		SELECT 
+		COUNT(id) 
+ 		FROM interaction_mood_diary where 
+		DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(add_time) 
+		and is_delete = 0 
+	</select>
+	
+	<!-- 查询日记用户总数 -->
+	<select id="getDiaryUserCount" resultType="java.lang.Integer" >
+		SELECT COUNT(DISTINCT user_id) FROM interaction_mood_diary 
+	</select>
+
+	<!-- 查询日记总数前五的用户信息 -->	
+	<select id="getMaxDirayUser" resultMap="BoResultMap" >
+ 		SELECT 
+		<include refid="Po_Column_List" /> 
+		FROM
+			(
+				SELECT
+					*
+				FROM
+					interaction_mood_diary
+				WHERE
+					is_delete = 0
+				GROUP BY
+					user_id
+				ORDER BY
+					COUNT(id) DESC
+				LIMIT 0, 5
+			) interaction_mood_diary,
+			user_info
+		WHERE
+			interaction_mood_diary.user_id = user_info.id
+	</select>
+	
+	<!-- 查询最新发布的5条日记 -->
+	<select id="getMaxDiray" resultMap="BoResultMap" >
+		SELECT 
+		<include refid="Po_Column_List" /> 
+		FROM
+			(
+				SELECT
+					*
+				FROM
+					interaction_mood_diary
+				WHERE
+					is_delete = 0
+		 		ORDER BY add_time DESC LIMIT 0, 5
+			) interaction_mood_diary,
+			user_info
+		WHERE
+			interaction_mood_diary.user_id = user_info.id
+	</select>
+
+	<!-- 根据UserId查询宝妈日记 -->
+	<select id="getDiaryByUserId" resultMap="BoResultMap" 
+		parameterType="com.jumper.angel.sociality.diary.model.vo.DiaryVo">
+		SELECT 
+		* 
+		from interaction_mood_diary 
+		<include refid="Po_Where_Clause" />
+		ORDER BY add_time DESC LIMIT 1 
+	</select>
+
+	<!-- 根据ID查询宝妈日记详情 -->
+	<select id="getById" resultMap="BoResultMap" 
+		parameterType="com.jumper.angel.sociality.diary.model.vo.DiaryVo">
+		SELECT 
+		<include refid="Po_Column_List" /> 
+		from interaction_mood_diary, user_info where interaction_mood_diary.user_id = user_info.id  
+		AND interaction_mood_diary.id = #{id} 
+	</select>
+
+	<!-- 根据用户ID查询最新发表日记时间 -->
+	<select id="selLatestDiary" resultMap="BoResultMap" 
+		parameterType="com.jumper.angel.sociality.diary.model.vo.DiaryVo">
+		SELECT
+		<include refid="Po_Column_List1" />
+		from interaction_mood_diary WHERE
+		add_time is not null
+		<if test="userId != null and userId != '' ">
+			and user_id = #{userId}
+		</if>
+		ORDER BY add_time DESC LIMIT 1
+	</select>
+
+</mapper>

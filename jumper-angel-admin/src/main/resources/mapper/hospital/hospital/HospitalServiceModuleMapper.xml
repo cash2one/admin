@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.hospital.hospital.mapper.HospitalServiceModuleMapper">
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.hospital.entity.HospitalServiceModule">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_date" jdbcType="BIGINT" property="createdDate" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="comment" jdbcType="VARCHAR" property="comment" />
+    <result column="disabled" jdbcType="INTEGER" property="disabled" />
+    <result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_date, title, comment, disabled,img_url
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_service_module
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from hospital_service_module
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalServiceModule">
+    insert into hospital_service_module (id, created_date, title, 
+      comment, disabled,img_url)
+    values (#{id,jdbcType=INTEGER}, #{createdDate,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, 
+      #{comment,jdbcType=VARCHAR}, #{disabled,jdbcType=INTEGER}, #{imgUrl,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalServiceModule">
+    insert into hospital_service_module
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">           id,      </if>
+      <if test="createdDate != null">  created_date,      </if>
+      <if test="title != null">        title,      </if>
+      <if test="comment != null">      comment,      </if>
+      <if test="disabled != null">     disabled,      </if>
+      <if test="imgUrl != null">       img_url,      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">           #{id,jdbcType=INTEGER},      </if>
+      <if test="createdDate != null">  #{createdDate,jdbcType=BIGINT},      </if>
+      <if test="title != null">        #{title,jdbcType=VARCHAR},      </if>
+      <if test="comment != null">      #{comment,jdbcType=VARCHAR},      </if>
+      <if test="disabled != null">     #{disabled,jdbcType=INTEGER},      </if>
+      <if test="imgUrl != null">       #{imgUrl,jdbcType=VARCHAR},      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalServiceModule">
+    update hospital_service_module
+    <set>
+      <if test="createdDate != null">  created_date = #{createdDate,jdbcType=BIGINT},      </if>
+      <if test="title != null">        title = #{title,jdbcType=VARCHAR},      </if>
+      <if test="comment != null">      comment = #{comment,jdbcType=VARCHAR},      </if>
+      <if test="disabled != null">     disabled = #{disabled,jdbcType=INTEGER},      </if>
+      <if test="imgUrl != null">       img_url = #{imgUrl,jdbcType=VARCHAR},      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalServiceModule">
+    update hospital_service_module
+    set created_date = #{createdDate,jdbcType=BIGINT},
+      title = #{title,jdbcType=VARCHAR},
+      comment = #{comment,jdbcType=VARCHAR},
+      disabled = #{disabled,jdbcType=INTEGER},
+      img_url = #{imgUrl,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 通过名称查询对象 -->
+  <select id="selectByTitle" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_service_module
+    where title = #{title}
+  </select>
+  
+  <!-- 查询前面12个默认功能 -->
+  <select id="selectByKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_service_module
+    where id &lt;= #{key,jdbcType=INTEGER}
+  </select>
+</mapper>

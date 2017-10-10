@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.sociality.debatepost.mapper.UserCollectionMapper" >
+  <resultMap id="BaseResultMap" type="com.jumper.angel.sociality.debatepost.model.po.UserCollectionPO">
+    <id column="COLLEC_ID" property="collecId" jdbcType="BIGINT" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="DEBATEPOST_ID" property="debatepostId" jdbcType="BIGINT" />
+    <result column="CREDTE_DATE" property="credteDate" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    COLLEC_ID, USER_ID, DEBATEPOST_ID, CREDTE_DATE
+  </sql>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from T_IM_USER_COLLECTION
+    where COLLEC_ID = #{collecId,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insertUserCollection" parameterType="com.jumper.angel.sociality.debatepost.model.po.UserCollectionPO" >
+    insert into T_IM_USER_COLLECTION (COLLEC_ID, USER_ID, DEBATEPOST_ID, 
+      CREDTE_DATE)
+    values (#{collecId,jdbcType=BIGINT}, #{userId,jdbcType=VARCHAR}, #{debatepostId,jdbcType=BIGINT}, 
+      #{credteDate,jdbcType=BIGINT})
+  </insert>
+
+  <select id="getUserCollection" resultMap="BaseResultMap"
+		parameterType="com.jumper.angel.sociality.debatepost.model.po.UserCollectionPO">
+		select
+		<include refid="Base_Column_List" />
+		from T_IM_USER_COLLECTION
+		where USER_ID = #{userId,jdbcType=VARCHAR} and DEBATEPOST_ID = #{debatepostId,jdbcType=BIGINT}
+	</select>
+</mapper>

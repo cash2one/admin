@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.information.mapper.NewsCommentPraiseMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.information.entity.NewsCommentPraise" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="mobile_sequence" property="mobileSequence" jdbcType="VARCHAR" />
+    <result column="comment_id" property="commentId" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, mobile_sequence, comment_id, add_time
+  </sql>
+  
+ <!-- 删除评论点赞  -->
+ <delete id="deleteNewsCommentPraise" parameterType="int">
+ 	delete from news_comment_praise where comment_id=#{comment_id}
+ </delete>
+ 
+  
+</mapper>

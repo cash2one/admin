@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.hospital.doctor.mapper.ImMsgPoMapper">
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.doctor.entity.ImMsgPo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="msg_id" jdbcType="BIGINT" property="msgId" />
+    <result column="bus_code" jdbcType="VARCHAR" property="busCode" />
+    <result column="consultant_id" jdbcType="VARCHAR" property="consultantId" />
+    <result column="send_chat_id" jdbcType="VARCHAR" property="sendChatId" />
+    <result column="recevrer_chat_id" jdbcType="VARCHAR" property="recevrerChatId" />
+    <result column="send_time" jdbcType="VARCHAR" property="sendTime" />
+    <result column="msg_type" jdbcType="VARCHAR" property="msgType" />
+    <result column="data_id" jdbcType="VARCHAR" property="dataId" />
+    <result column="data_type" jdbcType="BIGINT" property="dataType" />
+    <result column="msg_content" jdbcType="VARCHAR" property="msgContent" />
+    <result column="create_date" jdbcType="BIGINT" property="createDate" />
+    <result column="msg_datastatus" jdbcType="BIGINT" property="msgDatastatus" />
+    <result column="callback_time" jdbcType="BIGINT" property="callbackTime" />
+    <result column="send_msg_id" jdbcType="BIGINT" property="sendMsgId" />
+    <result column="sound_size" jdbcType="VARCHAR" property="size" />
+    <result column="group_id" jdbcType="VARCHAR" property="groupId" />
+    <result column="msg_status" jdbcType="BIGINT" property="msgStatus" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    im.msg_id, imc.bus_code, imc.consultant_id, im.send_chat_id, im.recevrer_chat_id, 
+    im.send_time, im.msg_type, im.msg_content, im.msg_status
+  </sql>
+  
+  <!-- 查询咨询信息的总条数 -->
+  <select id="findMsgCount" resultType="int">
+  	select count(id)
+  	FROM `jumper_common`.`im_msg` im 
+		LEFT JOIN `jumper_common`.`im_msg_consultants` imc ON im.`msg_id` = imc.`msg_id`
+	WHERE ((im.send_chat_id = #{sender} and im.recevrer_chat_id = #{recevrer}) 
+  		OR (im.send_chat_id = #{recevrer} and im.recevrer_chat_id = #{sender}))
+  		AND imc.consultant_id = #{consultantId} and im.msg_type != 99 AND im.msg_type != 11
+  		 AND im.msg_type != 13 and im.msg_status != 0 and im.msg_status != 5
+  </select> 
+  
+  <!-- 查询咨询信息 -->
+  <select id="findMsge" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	FROM `jumper_common`.`im_msg` im 
+		LEFT JOIN `jumper_common`.`im_msg_consultants` imc ON im.`msg_id` = imc.`msg_id`
+	WHERE ((im.send_chat_id = #{sender} and im.recevrer_chat_id = #{recevrer}) 
+  		OR (im.send_chat_id = #{recevrer} and im.recevrer_chat_id = #{sender}))
+  		AND imc.consultant_id = #{consultantId} and im.msg_type in (1,2,14) and im.msg_status != 0 and im.msg_status != 5
+  	ORDER BY send_time DESC
+  	<!-- limit #{start},#{pageSize} -->
+  </select>
+  
+  
+</mapper>

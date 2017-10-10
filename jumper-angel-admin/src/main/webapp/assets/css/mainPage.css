@@ -1,0 +1,597 @@
+/*重置*/
+body,html{
+	width:100%;
+	height: 100%;
+}
+applet, object, iframe, body, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dd, dl, dt, li, ol, ul, fieldset, form, label, legend, caption, img, header, section {
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border: none;
+}
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+ul li a{text-decoration: none;}
+img{display: inline-block;}
+
+/* 内容区域 样式  */   
+
+
+/*功能排序栏*/
+.content-searchBox{
+	background: #ddd;
+	font-size: 16px;
+}
+.current,.number,.rank{
+	float: left;
+}
+.current{
+	width:50%;
+	height: 24px;
+}
+.number{
+	width:35%;
+	height: 24px;
+}
+.rank{
+	width:15%;
+	height: 24px;
+}
+.content-searchBox .current .address{
+	font-weight: bold;
+	cursor: pointer;
+}
+.content-searchBox .number span i{
+	font-style: normal;
+	font-weight: bold;
+}
+.content-searchBox .red_btn_small{
+	width:80px;
+	height: 24px;
+	background: #e65545;
+	color:#f8f4ff;
+	border-radius: 4px;
+	border:none;
+	cursor: pointer;
+}
+/*input获取焦点时的阴影*/
+.activate{
+	border:1px solid red;
+	box-shadow:0 0 2px red;  
+}
+/*分页栏*/
+.tab-but {
+    width: 100%;
+    font-size: 16px;
+    height: 35px;
+    line-height: 35px;
+    margin: 30px 0px;
+}
+.tab-ul{
+    border-bottom: 1px solid #CCC;
+    margin: 20px 0px;
+    _padding-bottom: 6px;
+}
+.grey{
+    color: #666!important;
+}
+.tab-but .tab-ul li {
+    width: 100px;
+    display: inline-block;
+    _zoom: 1;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px 0;
+    _padding: 10px 10px 10px 15px;
+}
+.tab_active {
+    color: #e65545;
+    border-bottom: 5px solid #e65545;
+
+}
+/*分页内容*/
+.clear{clear: both;}/*清除浮动*/
+.bottomBox{position: relative;}
+/*左*/
+.base1{
+	width:100%;
+	padding:10px 0;
+	overflow:hidden;
+}
+.base_1{
+	width:46%;
+	height: 250px;
+	background:#f3f3f3;
+	margin: 5px 2% 5px 2%;
+	padding:10px 5px;
+	/* -moz-box-shadow:0 0 5px 1px #ccc;  
+	-webkit-box-shadow:0 0 5px 1px #ccc;   
+	box-shadow:0 0 5px 1px #ccc; */
+	float: left;
+	position:relative;
+}
+.base_left{
+	width:40%;
+	height: 100%;
+	text-align: center;
+	padding-top:57px;
+}
+.base_left img{
+	width:80px;
+	height: 80px;
+	padding-bottom:10px;
+	/* margin-left:36%; */
+}
+.base_left p{
+	font-size: 20px;
+	color: #666;
+}
+.base_right{
+	width:60%;
+	height: 100%;
+	padding-top:57px;
+}
+.base_right p,.base_right .ipt{
+	font-size: 18px;
+	color: #666;
+}
+.base_right p{
+	padding-bottom:6px;
+}
+.base_right .ipt input[type=text]{
+	width:130px;
+	height: 24px;
+}
+.base_left,.base_right{
+	float: left;
+}
+.base1 .base_rightBox p span{
+	color: #ccc;
+}
+
+/*中*/
+.base2{
+	width:100%;
+	padding:10px 0;
+	position: absolute;
+	top:65px;
+	left:0px;
+	display: none;
+	/* overflow:hidden; */
+    padding-bottom: 50px;
+}
+/*右*/
+.base3{
+	width:100%;
+	padding:10px 0;
+	position: absolute;
+	top:65px;
+	left:0px;
+	display: none;
+	/* overflow:hidden; */
+    padding-bottom: 50px;
+}
+.base3 .base_1_box{
+	position: relative;
+}
+.base3 .base_1_box .icon-plus{
+	text-align: center;
+	font-size: 40px;
+	position: absolute;
+	left:0;	
+	right:0;
+	top:30%;
+	cursor: pointer;
+}
+.base3 .base_1_box .icon-plus:hover{
+	transition: .8;
+	color:red;
+}
+.base3 .base_1_box .appendText{
+	text-align: center;
+	font-size: 18px;
+	position: absolute;
+	left:0;
+	right:0;
+	top:52%;
+}
+.redact{
+	width:65px;
+	height:24px;
+	border: #4595e6;
+	border-radius: 4px;
+	color:#fff;
+	background: #4595e6;
+	margin-left:30%;
+	cursor: pointer;
+}
+.redact:hover{
+	background: #2e8ded;
+}
+
+/*添加自定义弹出层*/
+/* #mask1{
+	position:fixed;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	background:rgba(120,120,120,0.6);
+	display:none;
+	z-index: 100;
+} */
+/* #mask1 .popBox{
+	position:absolute;
+	left:30%;
+	top:30%;
+	width:600px;
+	height:360px;
+	padding:10px;
+	background:white;
+} */
+#mask1 .popBox .close{
+	width:65px;
+	height: 30px;
+	color:white;
+	border:none;
+	border-radius: 4px;
+	background:#e65545;
+	margin-left: 498px;
+	margin-top: 10px;
+	cursor: pointer;
+}
+#mask1 .popBox .close:hover{
+	background:#e13926;
+}
+
+#mask1 #popups .customTips{
+	font-size: 18px;
+	padding-left:20px;
+}
+#mask1 #popups .funName{
+	padding-top:30px;
+	font-size: 18px;
+	padding-left:20px;
+}
+#mask1 #popups .funName input{
+	width:240px;
+	height: 24px;
+}
+#mask1 #popups .funName .ipt2{
+	margin-left:16px;
+}
+#mask1 #popups .funName span{
+	font-size: 16px;
+	color:red;
+}
+#mask1 .double_btn{
+	padding-top:90px;
+	padding-left:18px;
+}
+#mask1 #popups .double_btn .affirm{
+	width:65px;
+	height: 30px;
+	color:white;
+	border:none;
+	border-color: #4898d5;
+	border-radius: 4px;
+	background:#4595e6;
+	margin-right: 40%;
+	margin-left:18%;
+	cursor: pointer;
+}
+#mask1 #popups .double_btn .cancel{
+	width:65px;
+	height: 30px;
+	color:white;
+	border:none;
+	border-color: #e65545;
+	border-radius: 4px;
+	background:#e65545;
+	cursor: pointer;
+}
+#mask1 #popups .double_btn .affirm:hover{
+	background:#2e8ded;
+}
+#mask1 #popups .double_btn .cancel:hover{
+	background:#e13926;
+}
+/*添加自定义编辑层*/
+#mask2{
+	position:fixed;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	background:rgba(120,120,120,0.6);
+	display:none;
+	z-index: 100;
+}
+#mask2 .popBox{
+	position:absolute;
+	left:30%;
+	top:30%;
+	width:600px;
+	height:360px;
+	padding:10px;
+	background:white;
+}
+#mask2 .popBox .close{
+	width:65px;
+	height: 30px;
+	color:white;
+	border:none;
+	border-radius: 4px;
+	background:#e65545;
+	margin-left: 498px;
+	margin-top: 10px;
+	cursor: pointer;
+}
+#mask2 .popBox .close:hover{
+	background:#e13926;
+}
+
+#mask2 #popups .customTips{
+	font-size: 18px;
+	padding-left:20px;
+}
+#mask2 #popups .funName{
+	padding-top:30px;
+	font-size: 18px;
+	padding-left:20px;
+}
+#mask2 #popups .funName input{
+	width:240px;
+	height: 24px;
+}
+#mask2 #popups .funName .ipt2{
+	margin-left:16px;
+}
+#mask2 #popups .funName span{
+	font-size: 16px;
+	color:red;
+}
+#mask2 .double_btn{
+	padding-top:90px;
+	padding-left:18px;
+}
+#mask2 #popups .double_btn .affirm{
+	width:65px;
+	height: 30px;
+	color:white;
+	border:none;
+	border-color: #4898d5;
+	border-radius: 4px;
+	background:#4595e6;
+	margin-right: 40%;
+	margin-left:18%;
+	cursor: pointer;
+}
+#mask2 #popups .double_btn .cancel{
+	width:65px;
+	height: 30px;
+	color:white;
+	border:none;
+	border-color: #e65545;
+	border-radius: 4px;
+	background:#e65545;
+	cursor: pointer;
+}
+#mask2 #popups .double_btn .affirm:hover{
+	background:#2e8ded;
+}
+#mask2 #popups .double_btn .cancel:hover{
+	background:#e13926;
+}
+
+/*功能排序弹出层*/
+#mask3{
+	position:fixed;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	background:rgba(120,120,120,0.6);
+	display:none;
+	z-index: 100;
+}
+#mask3 #funPopups{
+	position:absolute;
+	left:30%;
+	top:90px;
+	width:600px;
+	min-height:480px;
+	max-height:780px;
+	padding:10px;
+	background:white;
+}
+#mask3 #funPopups .close{
+	width:65px;
+	height: 30px;
+	color:white;
+	border:none;
+	border-radius: 4px;
+	background:#e65545;
+	margin-left: 498px;
+	margin-top: 10px;
+	cursor: pointer;
+}
+#mask3 #funPopups .close:hover{
+	background:#e13926;
+}
+#mask3 #funPopups .function{
+	padding-top:20px;
+	font-size: 18px;
+	padding-left:20px;
+}
+#mask3 #funPopups .tabDetail{
+	font-size: 18px;
+	margin:10px 0px 0 20px;
+	min-height: 300px;
+	max-height:600px;
+	overflow: auto;
+}
+#mask3 #funPopups .tabDetail table{
+	width:540px;
+	border:#ccc;
+}
+#mask3 #funPopups .tabDetail table tr th{
+	width:540px;
+	height: 50px;
+}
+#mask3 #funPopups .tabDetail table tr td{
+	width:540px;
+	height: 30px;
+	text-align: center;
+}
+#mask3 #funPopups .tabDetail table tr td .forward{
+	cursor: pointer;
+	padding-right:10px;
+	color: #4595e6;
+}
+#mask3 #funPopups .tabDetail table tr td .retreat{
+	cursor: pointer;
+	color: #4595e6;
+}
+#mask3 #funPopups .double_btn{
+	padding-top:25px;
+	padding-left:6px;
+}
+#mask3 #funPopups .double_btn .affirm{
+	width:65px;
+	height: 30px;
+	color:white;
+	border:none;
+	border-color: #4898d5;
+	border-radius: 4px;
+	background:#4595e6;
+	margin-right: 40%;
+	margin-left:18%;
+	cursor: pointer;
+}
+#mask3 #funPopups .double_btn .cancel{
+	width:65px;
+	height: 30px;
+	color:white;
+	border:none;
+	border-color: #e65545;
+	border-radius: 4px;
+	background:#e65545;
+	cursor: pointer;
+}
+#mask3 #funPopups .double_btn .affirm:hover{
+	background:#2e8ded;
+}
+#mask3 #funPopups .double_btn .cancel:hover{
+	background:#e13926;
+}
+
+/*入口状态显示提示框和隐藏提示框*/
+#mask4{
+	width:400px;
+	height:150px;
+	display:none;
+}
+#mask4 #state_show{
+	font-size:20px;
+	text-align:center;
+	line-height:150px;
+}
+#mask5{
+	width:400px;
+	height:150px;
+	display:none;
+}
+#mask5 #state_hide{
+	font-size:20px;
+	text-align:center;
+	line-height:150px;
+}
+body .show_hide .layui-layer-btn0{
+    margin-right: 180px;
+}
+body .show_hide .layui-layer-btn1{
+	margin-right: 30px;
+	border-radius:4px;
+	color:white;
+	background: #e65545;
+}
+body .show_hide .layui-layer-btn1:hover{
+	background:#e13926;
+}
+
+
+
+
+/*URL输入框弹层*/
+#link{
+	width:400px;
+	height: 148px;
+	text-align: center;
+	font-size: 18px;
+	padding-top:60px;
+	display: none;
+}
+body .address_pop .layui-layer-btn0 {
+	margin-left: 10px;
+    margin-right: 190px;
+}
+body .address_pop .layui-layer-btn1 {
+	margin-right: 10px;
+	border-radius:4px;
+	color:white;
+	background: #e65545;
+}
+body .address_pop .layui-layer-btn1:hover{
+	background:#e13926;
+}
+
+.pages{margin-right: 2%;} 
+.pageszhu{text-align:right;clear: both;}
+
+/* 医院列表 */
+#pregnantStagehtml ul{
+	overflow:hidden;
+}
+#pregnantStagehtml ul li{
+	display:inline-block;
+}
+.norconter{
+	padding-top:10px;
+}
+.norconter ul{overflow:hidden;}
+.norconter ul li {
+	height:42px;
+	line-height:42px;
+}
+.norconter ul li label,.norconter ul li input{
+	display:block;
+	float:left;
+	font-size:16px;
+}
+.norconter ul li input{
+	width:240px;
+	font-size:15px;
+	height:32px;
+	line-height:32px;
+}
+.norconter ul li label{
+	width:140px;
+	line-height:32px;
+	text-align:right;
+}
+.tanks ul li p{
+	padding-left:140PX;
+	color:red;
+}
+.div_1 p,.div_2 p{color:red;font-size:14px;padding-left:88px;}
+.btnBj{
+	position:absolute;
+	right:10px;
+	top:10px;
+	z-index:9;
+}

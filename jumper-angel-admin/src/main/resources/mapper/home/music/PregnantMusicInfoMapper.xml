@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.music.mapper.PregnantMusicInfoMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.music.entity.PregnantMusicInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="week" property="week" jdbcType="INTEGER" />
+    <result column="day" property="day" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="voice_url" property="voiceUrl" jdbcType="VARCHAR" />
+    <result column="length" property="length" jdbcType="VARCHAR" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="irc" property="irc" jdbcType="VARCHAR" />
+    <result column="category" property="category" jdbcType="INTEGER" />
+    <result column="listen_times" property="listenTimes" jdbcType="INTEGER" />
+    <result column="cover_url" property="coverUrl" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="is_deleted" property="isDeleted" jdbcType="BIT" />
+    <result column="label_id" property="labelId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, week, day, name, voice_url, length, add_time, irc, category, listen_times, cover_url, 
+    status, sort, is_deleted, label_id
+  </sql>
+  
+  <!-- 查询电台信息 -->
+  <select id="findPregnantMusicByCategory" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+  	select
+  		<include refid="Base_Column_List"></include>
+  	from pregnant_music_info 
+  	where category=#{category} and is_deleted=0 order by sort desc limit #{beginIndex}, #{everyPage}
+  </select>
+  
+  <!-- 查询最大sort号 -->
+  <select id="findMaxSort" resultType="Integer">
+  	select max(sort) from pregnant_music_info where category=3 and is_deleted=0
+  </select>
+  
+  <!-- 查询电台总记录数 -->
+  <select id="findCount" resultType="Integer" parameterType="Integer">
+  	select
+  		count(1)
+  	from pregnant_music_info 
+  	where category=#{value} and status=1 and is_deleted=0
+  </select>
+  
+  <!-- 查询电台信息详情 -->
+  <select id="findPregnantMusicInfoDetail" resultMap="BaseResultMap" parameterType="Integer">
+  	select
+  		<include refid="Base_Column_List"></include>
+  	from pregnant_music_info where id=#{value}
+  </select>
+  
+  <!-- 修改电台信息 -->
+  <update id="updatePregnantMusicInfo" parameterType="com.jumper.angel.home.music.entity.PregnantMusicInfo" >
+    update pregnant_music_info
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="voiceUrl != null" >
+        voice_url = #{voiceUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="length != null" >
+        length = #{length,jdbcType=VARCHAR},
+      </if>
+      <if test="irc != null" >
+        irc = #{irc,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null" >
+        category = #{category,jdbcType=INTEGER},
+      </if>
+      <if test="coverUrl != null" >
+        cover_url = #{coverUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="isDeleted != null" >
+        is_deleted = #{isDeleted,jdbcType=BIT},
+      </if>
+      <if test="labelId != null">
+      	label_id = #{labelId}
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 添加电台信息 -->
+  <insert id="insertPregnantMusicInfo" parameterType="com.jumper.angel.home.music.entity.PregnantMusicInfo" >
+    insert into pregnant_music_info (week, day, 
+      name, voice_url, length, 
+      add_time, irc, category, 
+      listen_times, cover_url, status, 
+      sort, is_deleted, label_id)
+    values (#{week,jdbcType=INTEGER}, #{day,jdbcType=INTEGER}, 
+      #{name,jdbcType=VARCHAR}, #{voiceUrl,jdbcType=VARCHAR}, #{length,jdbcType=VARCHAR}, 
+      #{addTime,jdbcType=TIMESTAMP}, #{irc,jdbcType=VARCHAR}, #{category,jdbcType=INTEGER}, 
+      #{listenTimes,jdbcType=INTEGER}, #{coverUrl,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
+      #{sort,jdbcType=INTEGER}, #{isDeleted,jdbcType=BIT}, #{labelId})
+  </insert>
+  
+</mapper>

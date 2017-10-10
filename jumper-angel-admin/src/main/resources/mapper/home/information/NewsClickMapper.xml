@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.information.mapper.NewsClickMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.information.entity.NewsClick" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="news_id" property="newsId" jdbcType="INTEGER" />
+    <result column="clicks" property="clicks" jdbcType="INTEGER" />
+    <result column="add_date" property="addDate" jdbcType="DATE" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, news_id, clicks, add_date
+  </sql>
+  
+  <!-- 查询文章阅读量 ifnull函数表示：如果为null就返回0 -->
+  <select id="getBetweenDateClicks" resultType="Integer" parameterType="map">
+  	select
+  		IFNULL(sum(clicks), 0)
+  	from news_click where news_id=#{newsId} and add_date between #{beginDate} and #{endDate}
+  </select>
+  
+  <!-- 根据文章id删除文章点击量 -->
+  <delete id="deleteNewsClick" parameterType="int">
+  	delete from news_click where news_id=#{newsId}
+  </delete>
+
+  
+</mapper>

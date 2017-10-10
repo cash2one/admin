@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.hospital.doctor.mapper.ImMessagePoMapper">
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.doctor.entity.ImMessagePo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="msg_id" jdbcType="BIGINT" property="msgId" />
+    <result column="bus_code" jdbcType="VARCHAR" property="busCode" />
+    <result column="consultant_id" jdbcType="VARCHAR" property="consultantId" />
+    <result column="send_chat_id" jdbcType="VARCHAR" property="sendChatId" />
+    <result column="recevrer_chat_id" jdbcType="VARCHAR" property="recevrerChatId" />
+    <result column="send_time" jdbcType="VARCHAR" property="sendTime" />
+    <result column="msg_type" jdbcType="VARCHAR" property="msgType" />
+    <result column="data_id" jdbcType="VARCHAR" property="dataId" />
+    <result column="data_type" jdbcType="BIGINT" property="dataType" />
+    <result column="msg_content" jdbcType="VARCHAR" property="msgContent" />
+    <result column="create_date" jdbcType="BIGINT" property="createDate" />
+    <result column="msg_datastatus" jdbcType="BIGINT" property="msgDatastatus" />
+    <result column="callback_time" jdbcType="BIGINT" property="callbackTime" />
+    <result column="send_msg_id" jdbcType="BIGINT" property="sendMsgId" />
+    <result column="sound_size" jdbcType="VARCHAR" property="size" />
+    <result column="group_id" jdbcType="VARCHAR" property="groupId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, msg_id, bus_code, consultant_id, send_chat_id, recevrer_chat_id, send_time, msg_type, 
+    data_id, data_type, msg_content, create_date, msg_datastatus, callback_time, send_msg_id, 
+    sound_size, group_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from im_message
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from im_message
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.jumper.angel.hospital.doctor.entity.ImMessagePo">
+    insert into im_message (id, msg_id, bus_code, 
+      consultant_id, send_chat_id, recevrer_chat_id, 
+      send_time, msg_type, data_id, 
+      data_type, msg_content, create_date, 
+      msg_datastatus, callback_time, send_msg_id, 
+      sound_size, group_id)
+    values (#{id,jdbcType=BIGINT}, #{msgId,jdbcType=BIGINT}, #{busCode,jdbcType=VARCHAR}, 
+      #{consultantId,jdbcType=VARCHAR}, #{sendChatId,jdbcType=VARCHAR}, #{recevrerChatId,jdbcType=VARCHAR}, 
+      #{sendTime,jdbcType=VARCHAR}, #{msgType,jdbcType=VARCHAR}, #{dataId,jdbcType=VARCHAR}, 
+      #{dataType,jdbcType=BIGINT}, #{msgContent,jdbcType=VARCHAR}, #{createDate,jdbcType=BIGINT}, 
+      #{msgDatastatus,jdbcType=BIGINT}, #{callbackTime,jdbcType=BIGINT}, #{sendMsgId,jdbcType=BIGINT}, 
+      #{soundSize,jdbcType=VARCHAR}, #{groupId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jumper.angel.hospital.doctor.entity.ImMessagePo">
+    insert into im_message
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">        id,      </if>
+      <if test="msgId != null">        msg_id,      </if>
+      <if test="busCode != null">        bus_code,      </if>
+      <if test="consultantId != null">        consultant_id,      </if>
+      <if test="sendChatId != null">        send_chat_id,      </if>
+      <if test="recevrerChatId != null">        recevrer_chat_id,      </if>
+      <if test="sendTime != null">        send_time,      </if>
+      <if test="msgType != null">        msg_type,      </if>
+      <if test="dataId != null">        data_id,      </if>
+      <if test="dataType != null">        data_type,      </if>
+      <if test="msgContent != null">        msg_content,      </if>
+      <if test="createDate != null">        create_date,      </if>
+      <if test="msgDatastatus != null">        msg_datastatus,      </if>
+      <if test="callbackTime != null">        callback_time,      </if>
+      <if test="sendMsgId != null">        send_msg_id,      </if>
+      <if test="soundSize != null">        sound_size,      </if>
+      <if test="groupId != null">        group_id,      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">       		#{id,jdbcType=BIGINT},      </if>
+      <if test="msgId != null">        	#{msgId,jdbcType=BIGINT},      </if>
+      <if test="busCode != null">       #{busCode,jdbcType=VARCHAR},      </if>
+      <if test="consultantId != null">  #{consultantId,jdbcType=VARCHAR},      </if>
+      <if test="sendChatId != null">    #{sendChatId,jdbcType=VARCHAR},      </if>
+      <if test="recevrerChatId != null">#{recevrerChatId,jdbcType=VARCHAR},      </if>
+      <if test="sendTime != null">      #{sendTime,jdbcType=VARCHAR},      </if>
+      <if test="msgType != null">       #{msgType,jdbcType=VARCHAR},      </if>
+      <if test="dataId != null">        #{dataId,jdbcType=VARCHAR},      </if>
+      <if test="dataType != null">      #{dataType,jdbcType=BIGINT},      </if>
+      <if test="msgContent != null">    #{msgContent,jdbcType=VARCHAR},      </if>
+      <if test="createDate != null">    #{createDate,jdbcType=BIGINT},      </if>
+      <if test="msgDatastatus != null"> #{msgDatastatus,jdbcType=BIGINT},      </if>
+      <if test="callbackTime != null">  #{callbackTime,jdbcType=BIGINT},      </if>
+      <if test="sendMsgId != null">     #{sendMsgId,jdbcType=BIGINT},      </if>
+      <if test="soundSize != null">     #{soundSize,jdbcType=VARCHAR},      </if>
+      <if test="groupId != null">       #{groupId,jdbcType=VARCHAR},      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jumper.angel.hospital.doctor.entity.ImMessagePo">
+    update im_message
+    <set>
+      <if test="msgId != null">        msg_id = #{msgId,jdbcType=BIGINT},      </if>
+      <if test="busCode != null">        bus_code = #{busCode,jdbcType=VARCHAR},      </if>
+      <if test="consultantId != null">        consultant_id = #{consultantId,jdbcType=VARCHAR},      </if>
+      <if test="sendChatId != null">        send_chat_id = #{sendChatId,jdbcType=VARCHAR},      </if>
+      <if test="recevrerChatId != null">        recevrer_chat_id = #{recevrerChatId,jdbcType=VARCHAR},      </if>
+      <if test="sendTime != null">        send_time = #{sendTime,jdbcType=VARCHAR},      </if>
+      <if test="msgType != null">        msg_type = #{msgType,jdbcType=VARCHAR},      </if>
+      <if test="dataId != null">        data_id = #{dataId,jdbcType=VARCHAR},      </if>
+      <if test="dataType != null">        data_type = #{dataType,jdbcType=BIGINT},      </if>
+      <if test="msgContent != null">        msg_content = #{msgContent,jdbcType=VARCHAR},      </if>
+      <if test="createDate != null">        create_date = #{createDate,jdbcType=BIGINT},      </if>
+      <if test="msgDatastatus != null">        msg_datastatus = #{msgDatastatus,jdbcType=BIGINT},      </if>
+      <if test="callbackTime != null">        callback_time = #{callbackTime,jdbcType=BIGINT},      </if>
+      <if test="sendMsgId != null">        send_msg_id = #{sendMsgId,jdbcType=BIGINT},      </if>
+      <if test="soundSize != null">        sound_size = #{soundSize,jdbcType=VARCHAR},      </if>
+      <if test="groupId != null">        group_id = #{groupId,jdbcType=VARCHAR},      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jumper.angel.hospital.doctor.entity.ImMessagePo">
+    update im_message
+    set msg_id = #{msgId,jdbcType=BIGINT},
+      bus_code = #{busCode,jdbcType=VARCHAR},
+      consultant_id = #{consultantId,jdbcType=VARCHAR},
+      send_chat_id = #{sendChatId,jdbcType=VARCHAR},
+      recevrer_chat_id = #{recevrerChatId,jdbcType=VARCHAR},
+      send_time = #{sendTime,jdbcType=VARCHAR},
+      msg_type = #{msgType,jdbcType=VARCHAR},
+      data_id = #{dataId,jdbcType=VARCHAR},
+      data_type = #{dataType,jdbcType=BIGINT},
+      msg_content = #{msgContent,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=BIGINT},
+      msg_datastatus = #{msgDatastatus,jdbcType=BIGINT},
+      callback_time = #{callbackTime,jdbcType=BIGINT},
+      send_msg_id = #{sendMsgId,jdbcType=BIGINT},
+      sound_size = #{soundSize,jdbcType=VARCHAR},
+      group_id = #{groupId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+  <!-- 查询咨询信息的总条数 -->
+  <select id="findMessageCount" resultType="int">
+  	select count(id)
+  	FROM `jumper_common`.`im_message`
+  	where 
+  		((send_chat_id = #{sender} and recevrer_chat_id = #{recevrer}) 
+  		or (send_chat_id = #{recevrer} and recevrer_chat_id = #{sender}))
+  		and consultant_id = #{consultantId} and msg_type != 'TIMCustomElem'
+  </select> 
+  
+  <!-- 查询咨询信息 -->
+  <select id="findMessage" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	FROM `jumper_common`.`im_message`
+  	where ((send_chat_id = #{sender} and recevrer_chat_id = #{recevrer}) 
+  		or (send_chat_id = #{recevrer} and recevrer_chat_id = #{sender}))
+  		and consultant_id = #{consultantId} and msg_type != 'TIMCustomElem'
+  	ORDER BY send_time DESC
+  	<!-- limit #{start},#{pageSize} -->
+  </select>
+  
+  
+</mapper>

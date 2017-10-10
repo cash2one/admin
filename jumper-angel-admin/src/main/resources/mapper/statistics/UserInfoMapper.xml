@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.user.statistics.mapper.UserInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.jumper.angel.user.statistics.entity.UserInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+    <result column="country" property="country" jdbcType="INTEGER" />
+    <result column="province" property="province" jdbcType="INTEGER" />
+    <result column="city" property="city" jdbcType="INTEGER" />
+    <result column="user_img" property="userImg" jdbcType="VARCHAR" />
+    <result column="expected_date_of_confinement" property="expectedDateOfConfinement" jdbcType="DATE" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="reg_time" property="regTime" jdbcType="TIMESTAMP" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="is_switch_push_msg" property="isSwitchPushMsg" jdbcType="INTEGER" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="user_type" property="userType" jdbcType="INTEGER" />
+    <result column="gold" property="gold" jdbcType="INTEGER" />
+    <result column="pregnant_stage" property="pregnantStage" jdbcType="INTEGER" />
+    <result column="pregnant_week" property="pregnantWeek" jdbcType="INTEGER" />
+    <result column="sina_open_id" property="sinaOpenId" jdbcType="VARCHAR" />
+    <result column="qq_open_id" property="qqOpenId" jdbcType="VARCHAR" />
+    <result column="weixin_open_id" property="weixinOpenId" jdbcType="VARCHAR" />
+    <result column="medical_num" property="medicalNum" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, mobile, email, nick_name, country, province, city, user_img, expected_date_of_confinement, 
+    status, reg_time, password, is_switch_push_msg, open_id, user_type, gold, pregnant_stage, 
+    pregnant_week, sina_open_id, qq_open_id, weixin_open_id, medical_num
+  </sql>
+ 
+ <!--  获取满足查询条件的初次关联某医院的用户数据总数 -->
+ <select id="findCount" parameterType="map" resultType="int">
+ 	select count(*) from user_info u,user_extra_info e,bind_hospital_log b 
+ 		where u.id=e.user_id and e.user_id=b.user_id 
+ 		and e.current_identity=#{currentIdentity} 
+ 		<if test="startTime != null and startTime != ''">
+ 			<![CDATA[
+ 				and b.binding_date>=#{startTime}
+ 			]]>
+ 		</if>
+ 		<if test="endTime != null and endTime != ''">
+ 			<![CDATA[
+ 				and b.binding_date<=#{endTime}
+ 			]]>
+ 		</if>
+ 		and b.hospital_id=#{hospitalId} and b.first_binding=1
+ </select>
+ 
+ <!--  获取满足查询条件的初次关联某医院的用户数据 -->
+ <select id="findHospitalDetailStatistics" parameterType="map" resultType="com.jumper.angel.user.statistics.vo.VOUserListInfo">
+ 	select u.id userId,e.real_name userName,u.mobile mobile,e.age age,u.expected_date_of_confinement expectedDateOfConfinement,
+ 		e.baby_birthday babyBirthDay,date_format(u.reg_time,'%Y-%c-%d %H:%i:%s') regTime,date_format(b.binding_date,'%Y-%c-%d %H:%i:%s') bindingTime
+ 		from user_info u,user_extra_info e,bind_hospital_log b 
+ 		where u.id=e.user_id and e.user_id=b.user_id 
+ 		and e.current_identity=#{currentIdentity} 
+ 		<if test="startTime != null and startTime != ''">
+ 			<![CDATA[
+ 				and b.binding_date>=#{startTime}
+ 			]]>
+ 		</if>
+ 		<if test="endTime != null and endTime != ''">
+ 			<![CDATA[
+ 				and b.binding_date<=#{endTime}
+ 			]]>
+ 		</if>
+ 		and b.hospital_id=#{hospitalId} and b.first_binding=1 order by b.binding_date desc limit #{beginIndex},#{everyPage}
+ </select>
+ 
+ <!-- 查询用户详情 -->
+ <select id="findUserInfoDetail" parameterType="int" resultType="com.jumper.angel.user.statistics.vo.VOUserDetailInfo">
+ 	select u.nick_name nickName,e.real_name realName,u.mobile mobile,e.age age,
+		(select proName from province where id=u.province) as proName,(select cityName from city where id=u.city) as cityName,
+		e.current_identity currentIdentity,u.expected_date_of_confinement expectedDateOfConfinement,
+		date_format(e.baby_birthday,'%Y-%c-%d') babyBirthDay,date_format(u.reg_time,'%Y-%c-%d %H:%i:%s') regTime,date_format(b.binding_date,'%Y-%c-%d %H:%i:%s') bindingTime,
+		(select name from hospital_info where id=b.hospital_id) as firstBindHospitalName,
+		b.version_name versionName,b.mobile_type mobileType,
+		(select name from hospital_info where id=e.common_hospital) as currentBindHospitalName,
+		date_format(e.login_time,'%Y-%c-%d %H:%i:%s') lastLoginTime
+			from user_info u,user_extra_info e,bind_hospital_log b
+				where u.id=e.user_id 
+					and e.user_id=b.user_id  
+					and u.id=#{userId}
+					and b.first_binding=1
+	
+ </select>
+ 
+</mapper>

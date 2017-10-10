@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.information.mapper.NewsInformationCommentsMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.information.entity.NewsInformationComments" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="news_information_id" property="newsInformationId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="is_focus_image" property="isFocusImage" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="praise" property="praise" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, parent_id, news_information_id, user_id, content, is_focus_image, add_time, praise
+  </sql>
+  
+  <!-- 通过新闻ID获取总记录数 -->
+  <select id="findCount" resultType="Integer" parameterType="Integer">
+  	select
+  		count(*)
+  	from news_information_comments where news_information_id=#{value}
+  </select>
+  
+  <!-- 获取文章评论列表 -->
+  <select id="findNewsComments" parameterType="int" resultType="com.jumper.angel.home.information.vo.VONewsInformationComments">
+  	select c.id,c.news_information_id newsInformationId,c.user_id userId,user_info.nick_name userName,c.content,date_format(c.add_time,'%Y-%c-%d %H:%i:%s') addTime
+  		from user_info,news_information_comments c 
+  			WHERE c.user_id=user_info.id and news_information_id=#{newsId}
+  </select>
+  
+  <!-- 根据评论id删除文章评论 -->
+  <delete id="deleteNewsComments" parameterType="int">
+  	delete from news_information_comments where id=#{commentId}
+  </delete>
+  
+  <!-- 根据文章id删除文章评论 -->
+  <delete id="deleteNewsCommentsByNewsIds" parameterType="int">
+  	delete from news_information_comments where news_information_id=#{newsId}
+  </delete>
+  
+</mapper>

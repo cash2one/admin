@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.sociality.group.mapper.GroupMapper">
+	<resultMap id="PoResultMap" type="com.jumper.angel.sociality.group.model.po.SocialityGroupPo">
+		<result column="ID" property="id" />
+		<result column="GROUP_ID" property="groupId" />
+		<result column="GROUP_NAME" property="groupName" />
+		<result column="GROUP_BRIEF_INTR" property="groupBriefIntr" />
+		<result column="GROUP_IMG_URL" property="groupImgUrl" />
+		<result column="PEOPLE_NUMBER" property="peopleNumber" />
+		<result column="OVERHEAD" property="overhead" />
+		<result column="DATA_STATUS" property="dataStatus" />
+		<result column="CREATE_USER_ID" property="createUserId" />
+		<result column="CREATE_USER_TIME" property="createUserTime" />
+		<result column="ALLOW_ADD" property="allowAdd" />
+		<result column="COVER_URL" property="coverUrl" />
+	</resultMap>
+
+	<resultMap id="BoResultMap" type="com.jumper.angel.sociality.group.model.bo.SocialityGroupBo">
+		<result column="ID" property="id" />
+		<result column="GROUP_ID" property="groupId" />
+		<result column="GROUP_NAME" property="groupName" />
+		<result column="GROUP_BRIEF_INTR" property="groupBriefIntr" />
+		<result column="GROUP_IMG_URL" property="groupImgUrl" />
+		<result column="PEOPLE_NUMBER" property="peopleNumber" />
+		<result column="OVERHEAD" property="overhead" />
+		<result column="DATA_STATUS" property="dataStatus" />
+		<result column="CREATE_USER_ID" property="createUserId" />
+		<result column="CREATE_USER_TIME" property="createUserTime" />
+		<result column="ALLOW_ADD" property="allowAdd" />
+		<result column="COVER_URL" property="coverUrl" />
+	</resultMap>
+	
+
+	<!-- sociality_communication_group table all fields -->
+	<sql id="Po_Column_List">
+		ID,GROUP_ID,GROUP_NAME,GROUP_BRIEF_INTR,GROUP_IMG_URL,PEOPLE_NUMBER,OVERHEAD,
+		DATA_STATUS,CREATE_USER_ID,CREATE_USER_TIME,ALLOW_ADD,COVER_URL
+	</sql>
+
+	<!-- 查询条件 -->
+	<sql id="Po_Where_Clause">
+		<where>
+			1=1
+			<if test="id != null  "> 
+				and ID=#{id}
+			</if>
+			<if test="groupId != null  and groupId != '' ">
+				and GROUP_ID like '%${groupId}%'
+			</if>
+			<if test="groupName != null  and groupName != '' ">
+				and GROUP_NAME like '%${groupName}%'
+			</if>
+			<if test="groupBriefIntr != null  and groupBriefIntr != '' ">
+				and GROUP_BRIEF_INTR like '%${groupBriefIntr}%'
+			</if>
+			<if test="groupImgUrl != null  and groupImgUrl != '' ">
+				and GROUP_IMG_URL like '%${groupImgUrl}%'
+			</if>
+			<if test="peopleNumber != null  ">
+				and PEOPLE_NUMBER=#{peopleNumber}
+			</if>
+			<if test="overhead != null  ">
+				and OVERHEAD=#{overhead}
+			</if>
+			<if test="dataStatus != null  and dataStatus>=0">
+				and DATA_STATUS=#{dataStatus}
+			</if>
+			<if test="createUserId != null  and createUserId != '' ">
+				and CREATE_USER_ID like '%${createUserId}%'
+			</if>
+			<if test="createUserTime != null  ">
+				and CREATE_USER_TIME=#{createUserTime}
+			</if>
+			<if test="allowAdd != null  ">
+				and ALLOW_ADD=#{allowAdd} 
+			</if>
+			<if test="coverUrl != null  ">
+				and COVER_URL=#{coverUrl} 
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="Po_Where_Clause1">
+		<where>
+			1=1
+			<if test="groupName != null  and groupName != '' ">
+				and GROUP_NAME like '${groupName}%'
+			</if>
+		</where>
+	</sql>
+
+	<!-- 插入记录 [说明：如果要返回当前对象，需要如下配置：<insert id="addVo" parameterType="Object" 
+		useGeneratedKeys="true" keyProperty="id">] -->
+	<insert id="save" parameterType="com.jumper.angel.sociality.group.model.vo.SocialityGroupVo">
+		insert into T_IM_COMMUNICATION_GROUP (
+		<trim suffixOverrides=",">
+			<if test="groupId != null  ">
+				GROUP_ID,
+			</if>
+			<if test="groupName != null  ">
+				GROUP_NAME,
+			</if>
+			<if test="groupBriefIntr != null  ">
+				GROUP_BRIEF_INTR,
+			</if>
+			<if test="groupImgUrl != null  ">
+				GROUP_IMG_URL,
+			</if>
+			<if test="peopleNumber != null  ">
+				PEOPLE_NUMBER,
+			</if>
+			<if test="overhead != null  ">
+				OVERHEAD,
+			</if>
+			<if test="dataStatus != null  ">
+				DATA_STATUS,
+			</if>
+			<if test="createUserId != null  ">
+				CREATE_USER_ID,
+			</if>
+			<if test="createUserTime != null  ">
+				CREATE_USER_TIME,
+			</if>
+			<if test="allowAdd != null  ">
+				ALLOW_ADD,
+			</if>
+			<if test="coverUrl != null  ">
+				COVER_URL,
+			</if>
+		</trim>
+		) values (
+		<trim suffixOverrides=",">
+			<if test="groupId != null  ">
+				#{groupId},
+			</if>
+			<if test="groupName != null  ">
+				#{groupName},
+			</if>
+			<if test="groupBriefIntr != null  ">
+				#{groupBriefIntr},
+			</if>
+			<if test="groupImgUrl != null  ">
+				#{groupImgUrl},
+			</if>
+			<if test="peopleNumber != null  ">
+				#{peopleNumber},
+			</if>
+			<if test="overhead != null  ">
+				#{overhead},
+			</if>
+			<if test="dataStatus != null  ">
+				#{dataStatus},
+			</if>
+			<if test="createUserId != null  ">
+				#{createUserId},
+			</if>
+			<if test="createUserTime != null  ">
+				#{createUserTime},
+			</if>
+			<if test="allowAdd != null  ">
+				#{allowAdd},
+			</if>
+			<if test="coverUrl != null  ">
+				#{coverUrl},
+			</if>
+		</trim>
+		)
+	</insert>
+
+	<!-- 多条件删除记录 -->
+	<select id="del" resultType="java.lang.Integer" parameterType="com.jumper.angel.sociality.group.model.vo.SocialityGroupVo">
+		delete from T_IM_COMMUNICATION_GROUP
+		<include refid="Po_Where_Clause" />
+	</select>
+
+	<!--批量删除 -->
+	<delete id="delForList" parameterType="java.util.List">
+		delete from T_IM_COMMUNICATION_GROUP where id in
+		<foreach item="idItem" collection="list" index="index" open="("
+			separator="," close=")">
+			#{idItem}
+		</foreach>
+	</delete>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="edit" parameterType="com.jumper.angel.sociality.group.model.vo.SocialityGroupVo">
+		update T_IM_COMMUNICATION_GROUP set
+		<trim suffixOverrides=",">
+			<if test="groupId != null  and groupId != '' ">
+				GROUP_ID=#{groupId},
+			</if>
+			<if test="groupName != null  and groupName != '' ">
+				GROUP_NAME=#{groupName},
+			</if>
+			<if test="groupBriefIntr != null  and groupBriefIntr != '' ">
+				GROUP_BRIEF_INTR=#{groupBriefIntr},
+			</if>
+			<if test="groupImgUrl != null  and groupImgUrl != '' ">
+				GROUP_IMG_URL=#{groupImgUrl},
+			</if>
+			<if test="peopleNumber != null  ">
+				PEOPLE_NUMBER=#{peopleNumber},
+			</if>
+			<if test="overhead != null  ">
+				OVERHEAD=#{overhead},
+			</if>
+			<if test="dataStatus != null  ">
+				DATA_STATUS=#{dataStatus},
+			</if>
+			<if test="createUserId != null  and createUserId != '' ">
+				CREATE_USER_ID=#{createUserId},
+			</if>
+			<if test="createUserTime != null  ">
+				CREATE_USER_TIME=#{createUserTime},
+			</if>
+			<if test="allowAdd != null  ">
+				ALLOW_ADD=#{allowAdd},
+			</if>
+			<if test="coverUrl != null  ">
+				COVER_URL=#{coverUrl},
+			</if>
+		</trim>
+		where ID=#{id}
+	</update>
+	
+	<!-- 根据id查询 社交 交流圈 -->
+	<select id="getDataById" resultMap="PoResultMap" parameterType="com.jumper.angel.sociality.group.model.vo.SocialityGroupVo">
+		select
+		<include refid="Po_Column_List" />
+		from T_IM_COMMUNICATION_GROUP
+		where id = #{id}
+	</select>
+
+	<!-- 查询社交 交流圈列表 -->
+	<select id="sel" resultMap="BoResultMap" parameterType="com.jumper.angel.sociality.group.model.vo.SocialityGroupVo">
+		select
+		T_IM_COMMUNICATION_GROUP.ID,GROUP_ID,GROUP_NAME,GROUP_BRIEF_INTR,GROUP_IMG_URL,
+		PEOPLE_NUMBER,OVERHEAD,DATA_STATUS,ui.name CREATE_USER_ID,CREATE_USER_TIME,ALLOW_ADD,COVER_URL
+		from T_IM_COMMUNICATION_GROUP left join crm_admin ui on ui.id = CREATE_USER_ID
+		<include refid="Po_Where_Clause" />
+		<if test="page !=null and rows !=null">
+			LIMIT #{page,jdbcType=INTEGER}, #{rows,jdbcType=INTEGER} 
+		</if>
+	</select>
+
+	<!-- 社交 交流圈 列表总数-->
+	<select id="getCounts" resultType="Integer">
+		select count(1) from T_IM_COMMUNICATION_GROUP
+		<include refid="Po_Where_Clause" />  
+	</select>
+	
+	<select id="selGroupInfoByName" resultMap="BoResultMap" parameterType="com.jumper.angel.sociality.group.model.vo.SocialityGroupVo">
+		select
+		<include refid="Po_Column_List" />
+		from T_IM_COMMUNICATION_GROUP
+		<where>
+			1=1
+			<if test="groupName != null  and groupName != '' ">
+				and GROUP_NAME like '${groupName}%'
+			</if>
+		</where>
+	</select>
+		
+		
+	<!--  根据bean 查询交流圈 -->
+	 <select id="selectGroupByBean" resultMap="BoResultMap" parameterType="com.jumper.angel.sociality.group.model.vo.SocialityGroupVo">
+	 		  select t.ID, t.GROUP_ID, t.GROUP_NAME, t.GROUP_BRIEF_INTR, t.GROUP_IMG_URL, t.PEOPLE_NUMBER, 
+    		   t.OVERHEAD, t.DATA_STATUS, t.CREATE_USER_ID, t.CREATE_USER_TIME,t.ALLOW_ADD,t.COVER_URL
+    		   from T_IM_COMMUNICATION_GROUP t
+    	<where>
+			<if test="id != null">
+				 AND t.ID= #{id},
+			</if>
+			<if test="groupId != null">
+				AND GROUP_ID = #{groupId},
+			</if>
+			<if test="groupName !=null and groupName !=''">  
+				AND t.GROUP_NAME  like CONCAT('%', #{GROUP_NAME,jdbcType=VARCHAR},'%')   
+			</if>
+			<!--  rder by t.CREATE_USER_TIME desc limit #{rows}, #{Page} -->
+		</where>
+	 </select>
+	 
+	<update id="updateGroupNumber" parameterType="java.util.List">
+		UPDATE T_IM_COMMUNICATION_GROUP t
+			SET PEOPLE_NUMBER = (SELECT COUNT(*) FROM T_IM_USER_GROUP t1 WHERE t1.GROUP_ID = t.GROUP_ID AND t1.IS_DELETE = '0')
+		WHERE t.GROUP_ID IN
+		<foreach item="itemGroupId" collection="list" index="index" open="("
+			separator="," close=")">
+			#{itemGroupId}
+		</foreach>
+	</update>	
+	<!-- 交流圈总数	除掉禁用 -->
+	<select id="groupCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_IM_COMMUNICATION_GROUP WHERE DATA_STATUS = 1
+	</select>
+	
+	<!-- 交流圈总人数	除掉禁用 -->
+	<select id="groupUserCount" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(*) 
+		FROM T_IM_USER_GROUP t1
+		INNER JOIN T_IM_COMMUNICATION_GROUP t2 ON t1.GROUP_ID = t2.GROUP_ID
+		WHERE t2.DATA_STATUS = '1' AND t1.IS_DELETE ='0' 
+	</select>
+	
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.health.mapper.PregnancyInfoMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.health.entity.PregnancyInfo" >
+    <result column="week" property="week" jdbcType="INTEGER" />
+    <result column="fetal_height" property="fetalHeight" jdbcType="DOUBLE" />
+    <result column="both_arm" property="bothArm" jdbcType="DOUBLE" />
+    <result column="fetal_weight" property="fetalWeight" jdbcType="DOUBLE" />
+    <result column="both_neck" property="bothNeck" jdbcType="VARCHAR" />
+    <result column="week_description" property="weekDescription" jdbcType="VARCHAR" />
+    <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+    <result column="pregnancy_status" property="pregnancyStatus" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    week, fetal_height, both_arm, fetal_weight, both_neck, week_description, image_url, pregnancy_status
+  </sql>
+  
+  <!-- 查询所有孕期信息 -->
+  <select id="findAllPrepnancyInfo" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+  	select
+  		<include refid="Base_Column_List"></include>
+  	from pregnancy_info order by week asc limit #{beginIndex}, #{everyPage}
+  </select>
+  
+  <!-- 查询孕期总记录数 -->
+  <select id="findCount" resultType="Integer">
+  	select
+  		count(1)
+  	from pregnancy_info
+  </select>
+  
+  <!-- 新增孕期信息 -->
+  <insert id="savePrepnancy" parameterType="com.jumper.angel.home.health.entity.PregnancyInfo">
+  	insert into pregnancy_info (week, fetal_height, both_arm, fetal_weight, both_neck, week_description, image_url, pregnancy_status) values 
+  	(#{week}, #{fetalHeight}, #{bothArm}, #{fetalWeight}, #{bothNeck}, #{weekDescription}, #{imageUrl}, #{pregnancyStatus})
+  </insert>
+  
+  <!-- 通过孕周查询孕期信息 -->
+  <select id="findPrepnancyByWeek" resultMap="BaseResultMap" parameterType="Integer">
+  	select
+  		<include refid="Base_Column_List"></include>
+  	from pregnancy_info where week=#{value}
+  </select>
+  
+  <!-- 更新孕期信息 -->
+  <update id="updatePrepnancy" parameterType="com.jumper.angel.home.health.entity.PregnancyInfo">
+  	update pregnancy_info set fetal_height=#{fetalHeight}, both_arm=#{bothArm}, 
+  		fetal_weight=#{fetalWeight}, both_neck=#{bothNeck}, week_description=#{weekDescription},
+  		image_url=#{imageUrl}, pregnancy_status=#{pregnancyStatus} where week=#{week}
+  </update>
+  
+  <!-- 删除孕期信息 -->
+  <delete id="deletePrepnancy" parameterType="Integer">
+  	delete from pregnancy_info where week=#{value}
+  </delete>
+  
+</mapper>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.sociality.topic.mapper.UserTopicMapper" >
+  
+  <resultMap id="userTopicVOMap" type="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="TOPIC_ID" property="topicId" jdbcType="BIGINT" />
+    <result column="TOPIC_NAME" property="topicName" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="DEBATEPOST_TIME" property="debatepostTime" jdbcType="BIGINT" />
+    <result column="IS_BLACKLIST" property="isBlacklist" jdbcType="INTEGER" />
+    <result column="IS_DELETE" property="isDelete" jdbcType="INTEGER" />
+    <result column="NICK_NAME" property="nickName" jdbcType="VARCHAR" />
+    <result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+    <result column="DEBATEPOST_CREATE_TIME" property="debatepostTime" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, USER_ID, TOPIC_ID, CREATE_TIME, DEBATEPOST_TIME, IS_BLACKLIST, IS_DELETE
+  </sql>
+   
+  <update id="update" parameterType="com.jumper.angel.sociality.topic.model.po.UserTopicPO">
+  		update T_IM_USER_TOPIC
+  		<set>
+			<if test="isBlacklist !=null and isBlacklist >=0">  
+				IS_BLACKLIST = #{isBlacklist,jdbcType=INTEGER} ,
+			</if>
+			<if test="debatepostTime !=null and debatepostTime >0">  
+				DEBATEPOST_TIME = #{debatepostTime,jdbcType=INTEGER} ,
+			</if>
+			<if test="isDelete !=null and isDelete >=0">  
+				IS_DELETE = #{isDelete,jdbcType=INTEGER} ,
+			</if>
+  		</set>
+  		where ID = #{id,jdbcType=BIGINT} 
+  </update>
+   
+   
+   <select id="selectById" resultMap="userTopicVOMap" parameterType="java.lang.Long">
+   	  select <include refid="Base_Column_List" /> from T_IM_USER_TOPIC
+   	  where id = #{id,jdbcType=BIGINT}
+   </select>
+   
+  <!--  <select id="selectUserTopicByPageBean" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" resultMap="userTopicVOMap">
+   			select t2.ID, t2.USER_ID, t2.TOPIC_ID, t2.TOPIC_NAME, t2.CREATE_TIME, t2.DEBATEPOST_TIME,t2.IS_BLACKLIST, t2.IS_DELETE,t3.NICK_NAME,t3.MOBILE 
+   			from (
+				select t.ID, t.USER_ID, t.TOPIC_ID, t1.TOPIC_NAME,t.CREATE_TIME, t.DEBATEPOST_TIME, t.IS_BLACKLIST, t.IS_DELETE
+				from T_IM_USER_TOPIC t INNER JOIN T_IM_TOPIC t1 on t.TOPIC_ID = t1.TOPIC_ID
+				where 1=1
+					<if test="topicId !=null and topicId>=0">
+						and t.TOPIC_ID = #{topicId,jdbcType=BIGINT}
+					</if>
+					<if test="isBlacklist !=null and isBlacklist>=0">
+						and t.IS_BLACKLIST = #{isBlacklist,jdbcType=INTEGER}
+					</if>
+					and t.IS_DELETE != 2
+			)t2 INNER JOIN user_info t3 on t2.USER_ID = t3.ID
+			<where>
+				<if test="nickName !=null and nickName !=''">
+					 t3.NICK_NAME like CONCAT('%', #{nickName,jdbcType=VARCHAR},'%')   
+				</if>
+				<if test="mobile !=null and mobile !=''">
+					or t3.MOBILE like CONCAT('%',#{mobile,jdbcType=VARCHAR},'%')
+				</if>
+			</where>		
+			ORDER BY t2.CREATE_TIME desc LIMIT #{beginIndex}, #{everyPage}
+   </select> -->
+   
+   <!-- <select id="selectCountUserTopicByBean" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" resultType="java.lang.Integer">
+		 select count(t2.ID) from (
+			select t.ID, t.USER_ID, t.TOPIC_ID, t.CREATE_TIME, t.DEBATEPOST_TIME, t.IS_BLACKLIST, t.IS_DELETE
+			from T_IM_USER_TOPIC t INNER JOIN T_IM_TOPIC t1 on t.TOPIC_ID = t1.TOPIC_ID
+			where 1=1
+			<if test="topicId !=null and topicId>=0">
+				and t.TOPIC_ID = #{topicId,jdbcType=BIGINT}
+			</if>
+			<if test="isBlacklist !=null and isBlacklist>=0">
+				and t.IS_BLACKLIST = #{isBlacklist,jdbcType=INTEGER}
+			</if>
+			<if test="isDelete !=null and isDelete >=0">
+				and t.IS_DELETE = #{isDelete,jdbcType=INTEGER}
+			</if>
+			)t2 INNER JOIN user_info t3 on t2.USER_ID = t3.ID
+			<where>
+				<if test="nickName !=null and nickName !=''">
+					 t3.NICK_NAME like CONCAT('%', #{nickName,jdbcType=VARCHAR},'%')   
+				</if>
+				<if test="mobile !=null and mobile !=''">
+					or t3.MOBILE like CONCAT('%',#{mobile,jdbcType=VARCHAR},'%')
+				</if>
+			</where>		
+   </select> -->
+   
+   <!--  <select id="selectUserTopicByPageBean" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" resultMap="userTopicVOMap">
+		SELECT t4.ID, t4.USER_ID, t4.TOPIC_ID, t4.TOPIC_NAME, t4.CREATE_TIME, t4.DEBATEPOST_TIME, t4.IS_BLACKLIST, 
+		t4.IS_DELETE ,t5.NICK_NAME,t5.MOBILE FROM (
+		SELECT t2.ID, t2.USER_ID, t2.TOPIC_ID, t2.TOPIC_NAME, t2.CREATE_TIME, t2.DEBATEPOST_TIME, t3.IS_BLACKLIST, t2.IS_DELETE FROM(
+		SELECT t.ID, t.USER_ID, t.TOPIC_ID, t1.TOPIC_NAME,t.CREATE_TIME, t.DEBATEPOST_TIME, t.IS_DELETE 
+		FROM T_IM_USER_TOPIC t 
+		INNER JOIN T_IM_TOPIC t1 
+		ON t.TOPIC_ID = t1.TOPIC_ID
+		where 1=1
+			<if test="topicId !=null and topicId>=0">
+				and t.TOPIC_ID = #{topicId,jdbcType=BIGINT}
+			</if>
+			and t.IS_DELETE != 2
+		)t2 
+		LEFT JOIN T_IM_TOPIC_NOSPEAKING t3
+		ON t2.TOPIC_ID=t3.TOPIC_ID AND t2.USER_ID=t3.USER_ID
+		where 1=1
+			<if test="isBlacklist !=null and isBlacklist>=0">
+				and t3.IS_BLACKLIST = #{isBlacklist,jdbcType=INTEGER}
+			</if>
+		)t4
+		INNER JOIN user_info t5 ON t4.USER_ID = t5.ID 
+		<where>
+			<if test="nickName !=null and nickName !=''">
+				 t5.NICK_NAME like CONCAT('%', #{nickName,jdbcType=VARCHAR},'%')   
+			</if>
+			<if test="mobile !=null and mobile !=''">
+				or t5.MOBILE like CONCAT('%',#{mobile,jdbcType=VARCHAR},'%')
+			</if>
+		</where>		
+		ORDER BY t4.CREATE_TIME desc LIMIT #{beginIndex}, #{everyPage}
+   </select> -->
+   
+    <select id="selectUserTopicByPageBean" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" resultMap="userTopicVOMap">
+		SELECT  t.ID, t.USER_ID, t.TOPIC_ID, t1.TOPIC_NAME, t.CREATE_TIME, t.DEBATEPOST_TIME, t3.IS_BLACKLIST, 
+		t.IS_DELETE ,t2.NICK_NAME,t2.MOBILE 
+		FROM  T_IM_USER_TOPIC t 
+		INNER JOIN T_IM_TOPIC t1 
+		ON t.TOPIC_ID = t1.TOPIC_ID
+		INNER JOIN user_info t2
+		ON t.USER_ID = t2.ID 
+		LEFT JOIN T_IM_TOPIC_NOSPEAKING t3
+		ON t.TOPIC_ID=t3.TOPIC_ID AND t.USER_ID=t3.USER_ID
+		WHERE t.IS_DELETE != 2
+		<if test="topicId !=null and topicId>=0">
+			AND t.TOPIC_ID = #{topicId,jdbcType=BIGINT}
+		</if>
+		<if test="isBlacklist !=null and isBlacklist>=0">
+			AND t3.IS_BLACKLIST = #{isBlacklist,jdbcType=INTEGER}
+		</if>
+		<if test="nickName !=null and nickName !=''">
+			AND (t2.NICK_NAME LIKE CONCAT('%', #{nickName,jdbcType=VARCHAR},'%')   
+		</if>
+		<if test="mobile !=null and mobile !=''">
+			OR t2.MOBILE LIKE CONCAT('%',#{mobile,jdbcType=VARCHAR},'%'))
+		</if>
+		ORDER BY t.CREATE_TIME DESC LIMIT #{beginIndex}, #{everyPage}
+   </select>
+   
+   <!-- <select id="selectCountUserTopicByBean" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" resultType="java.lang.Integer">
+		SELECT count(1) FROM (
+		SELECT t4.ID, t4.USER_ID, t4.TOPIC_ID, t4.TOPIC_NAME, t4.CREATE_TIME, t4.DEBATEPOST_TIME, t4.IS_BLACKLIST, 
+		t4.IS_DELETE ,t5.NICK_NAME,t5.MOBILE FROM (
+		SELECT t2.ID, t2.USER_ID, t2.TOPIC_ID, t2.TOPIC_NAME, t2.CREATE_TIME, t2.DEBATEPOST_TIME, t3.IS_BLACKLIST, t2.IS_DELETE FROM(
+		SELECT t.ID, t.USER_ID, t.TOPIC_ID, t1.TOPIC_NAME,t.CREATE_TIME, t.DEBATEPOST_TIME, t.IS_DELETE 
+		FROM T_IM_USER_TOPIC t 
+		INNER JOIN T_IM_TOPIC t1 
+		ON t.TOPIC_ID = t1.TOPIC_ID
+		where 1=1
+			<if test="topicId !=null and topicId>=0">
+				and t.TOPIC_ID = #{topicId,jdbcType=BIGINT}
+			</if>
+			and t.IS_DELETE != 2
+		)t2 
+		LEFT JOIN T_IM_TOPIC_NOSPEAKING t3
+		ON t2.TOPIC_ID=t3.TOPIC_ID AND t2.USER_ID=t3.USER_ID
+		where 1=1
+			<if test="isBlacklist !=null and isBlacklist>=0">
+				and t3.IS_BLACKLIST = #{isBlacklist,jdbcType=INTEGER}
+			</if>
+		)t4
+		INNER JOIN user_info t5 ON t4.USER_ID = t5.ID 
+		<where>
+			<if test="nickName !=null and nickName !=''">
+				 t5.NICK_NAME like CONCAT('%', #{nickName,jdbcType=VARCHAR},'%')   
+			</if>
+			<if test="mobile !=null and mobile !=''">
+				or t5.MOBILE like CONCAT('%',#{mobile,jdbcType=VARCHAR},'%')
+			</if>
+		</where>		
+		) AS s			
+   </select> -->
+   
+   <select id="selectCountUserTopicByBean" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" resultType="java.lang.Integer">
+		SELECT count(1) FROM (
+		SELECT  t.ID, t.USER_ID, t.TOPIC_ID, t1.TOPIC_NAME, t.CREATE_TIME, t.DEBATEPOST_TIME, t3.IS_BLACKLIST, 
+		t.IS_DELETE ,t2.NICK_NAME,t2.MOBILE 
+		FROM  T_IM_USER_TOPIC t 
+		INNER JOIN T_IM_TOPIC t1 
+		ON t.TOPIC_ID = t1.TOPIC_ID
+		INNER JOIN user_info t2
+		ON t.USER_ID = t2.ID 
+		LEFT JOIN T_IM_TOPIC_NOSPEAKING t3
+		ON t.TOPIC_ID=t3.TOPIC_ID AND t.USER_ID=t3.USER_ID
+		WHERE 1=1
+		<if test="topicId !=null and topicId>=0">
+			AND t.TOPIC_ID = #{topicId,jdbcType=BIGINT}
+		</if>
+		<if test="isBlacklist !=null and isBlacklist>=0">
+			AND t3.IS_BLACKLIST = #{isBlacklist,jdbcType=INTEGER}
+		</if>
+		AND t.IS_DELETE != 2
+		<if test="nickName !=null and nickName !=''">
+			AND (t2.NICK_NAME LIKE CONCAT('%', #{nickName,jdbcType=VARCHAR},'%')   
+		</if>
+		<if test="mobile !=null and mobile !=''">
+			OR t2.MOBILE LIKE CONCAT('%',#{mobile,jdbcType=VARCHAR},'%'))
+		</if>
+		) AS s			
+   </select>
+   
+   <select id="updateUserTopicLastSpeaking" parameterType="com.jumper.angel.sociality.topic.model.vo.UserTopicVO" resultMap="userTopicVOMap">
+		select t.DEBATEPOST_USER_ID as USER_ID, t.TOPIC_ID as TOPIC_ID , t.CREATE_TIME as DEBATEPOST_CREATE_TIME from T_IM_DEBATEPOST t 
+		where t.TOPIC_ID = #{topicId,jdbcType=BIGINT} and t.DEBATEPOST_USER_ID = #{userId,jdbcType=VARCHAR}
+		order by t.CREATE_TIME desc limit 1
+   </select>
+   
+   <!-- 当前话题组总人数  	所有 -->
+   <select id="currentUserCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(*)
+ 		FROM (
+			SELECT t.ID, t.USER_ID, t.TOPIC_ID, t.CREATE_TIME, t.DEBATEPOST_TIME, t.IS_BLACKLIST, t.IS_DELETE
+		
+			FROM T_IM_USER_TOPIC t INNER JOIN T_IM_TOPIC t1 ON t.TOPIC_ID = t1.TOPIC_ID
+	
+			WHERE t.TOPIC_ID=#{topicId,jdbcType=BIGINT}	AND t.IS_DELETE != 2
+		)t2 INNER JOIN user_info t3 ON t2.USER_ID = t3.ID
+   </select>
+   
+   <!-- 今日当前话题新增人数   按天统计 -->
+   <select id="currentIncreaseCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(*)
+		FROM T_IM_USER_TOPIC t
+		WHERE t.TOPIC_ID = #{topicId,jdbcType=BIGINT} AND IS_DELETE = '0'
+		AND FROM_UNIXTIME(t.CREATE_TIME/1000,'%Y-%m-%d') = FROM_UNIXTIME(UNIX_TIMESTAMP(NOW()),'%Y-%m-%d')
+   </select>
+   
+</mapper>

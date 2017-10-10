@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.hospital.hospital.mapper.OperationRecordsMapper">
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.hospital.entity.OperationRecords">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
+    <result column="payment" jdbcType="TINYINT" property="payment" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="hospital_id" jdbcType="INTEGER" property="hospitalId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, add_time, payment, user_name, hospital_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from operation_records
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from operation_records
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jumper.angel.hospital.hospital.entity.OperationRecords">
+    insert into operation_records (id, add_time, payment, 
+      user_name, hospital_id)
+    values (#{id,jdbcType=INTEGER}, #{addTime,jdbcType=TIMESTAMP}, #{payment,jdbcType=TINYINT}, 
+      #{userName,jdbcType=VARCHAR}, #{hospitalId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jumper.angel.hospital.hospital.entity.OperationRecords">
+    insert into operation_records
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">        	 id,      </if>
+      <if test="addTime != null">        add_time,      </if>
+      <if test="payment != null">        payment,      </if>
+      <if test="userName != null">       user_name,      </if>
+      <if test="hospitalId != null">     hospital_id,      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">       		 #{id,jdbcType=INTEGER},      </if>
+      <if test="addTime != null">        #{addTime,jdbcType=TIMESTAMP},      </if>
+      <if test="payment != null">        #{payment,jdbcType=TINYINT},      </if>
+      <if test="userName != null">       #{userName,jdbcType=VARCHAR},      </if>
+      <if test="hospitalId != null">     #{hospitalId,jdbcType=INTEGER},      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jumper.angel.hospital.hospital.entity.OperationRecords">
+    update operation_records
+    <set>
+      <if test="addTime != null">        add_time = #{addTime,jdbcType=TIMESTAMP},      </if>
+      <if test="payment != null">        payment = #{payment,jdbcType=TINYINT},      </if>
+      <if test="userName != null">       user_name = #{userName,jdbcType=VARCHAR},      </if>
+      <if test="hospitalId != null">     hospital_id = #{hospitalId,jdbcType=INTEGER},      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jumper.angel.hospital.hospital.entity.OperationRecords">
+    update operation_records
+    set add_time = #{addTime,jdbcType=TIMESTAMP},
+      payment = #{payment,jdbcType=TINYINT},
+      user_name = #{userName,jdbcType=VARCHAR},
+      hospital_id = #{hospitalId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.hospital.hospital.mapper.HospitalModuleHostMapper">
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.hospital.entity.HospitalModuleHost">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="hospital_id" jdbcType="INTEGER" property="hospitalId" />
+    <result column="host" jdbcType="VARCHAR" property="host" />
+    <result column="module_num" jdbcType="INTEGER" property="moduleNum" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, hospital_id, host, module_num, remark
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_module_host
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByHospitalId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_module_host
+    where hospital_id = #{hospitalId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByModuleNum" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hospital_module_host
+    where module_num = #{moduleNum,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from hospital_module_host
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalModuleHost">
+    insert into hospital_module_host (id, hospital_id, host, 
+      module_num, remark)
+    values (#{id,jdbcType=INTEGER}, #{hospitalId,jdbcType=INTEGER}, #{host,jdbcType=VARCHAR}, 
+      #{moduleNum,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalModuleHost">
+    insert into hospital_module_host
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">        id,      </if>
+      <if test="hospitalId != null">hospital_id,      </if>
+      <if test="host != null">      host,      </if>
+      <if test="moduleNum != null"> module_num,      </if>
+      <if test="remark != null">    remark,      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">        #{id,jdbcType=INTEGER},      </if>
+      <if test="hospitalId != null">#{hospitalId,jdbcType=INTEGER},      </if>
+      <if test="host != null">      #{host,jdbcType=VARCHAR},      </if>
+      <if test="moduleNum != null"> #{moduleNum,jdbcType=INTEGER},      </if>
+      <if test="remark != null">    #{remark,jdbcType=VARCHAR},      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalModuleHost">
+    update hospital_module_host
+    <set>
+      <if test="hospitalId != null">  hospital_id = #{hospitalId,jdbcType=INTEGER},      </if>
+      <if test="host != null">        host = #{host,jdbcType=VARCHAR},      </if>
+      <if test="moduleNum != null">   module_num = #{moduleNum,jdbcType=INTEGER},      </if>
+      <if test="remark != null">      remark = #{remark,jdbcType=VARCHAR},      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jumper.angel.hospital.hospital.entity.HospitalModuleHost">
+    update hospital_module_host
+    set hospital_id = #{hospitalId,jdbcType=INTEGER},
+      host = #{host,jdbcType=VARCHAR},
+      module_num = #{moduleNum,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

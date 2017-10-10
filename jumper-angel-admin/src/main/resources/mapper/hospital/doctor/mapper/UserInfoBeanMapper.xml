@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jumper.angel.hospital.doctor.mapper.UserInfoBeanMapper">
+  <resultMap id="BaseResultMap" type="com.jumper.angel.hospital.doctor.entity.UserInfoBean">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="country" jdbcType="INTEGER" property="country" />
+    <result column="province" jdbcType="INTEGER" property="province" />
+    <result column="city" jdbcType="INTEGER" property="city" />
+    <result column="user_img" jdbcType="VARCHAR" property="userImg" />
+    <result column="expected_date_of_confinement" jdbcType="DATE" property="expectedDateOfConfinement" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="reg_time" jdbcType="TIMESTAMP" property="regTime" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="is_switch_push_msg" jdbcType="INTEGER" property="isSwitchPushMsg" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="user_type" jdbcType="INTEGER" property="userType" />
+    <result column="gold" jdbcType="INTEGER" property="gold" />
+    <result column="pregnant_stage" jdbcType="INTEGER" property="pregnantStage" />
+    <result column="pregnant_week" jdbcType="INTEGER" property="pregnantWeek" />
+    <result column="sina_open_id" jdbcType="VARCHAR" property="sinaOpenId" />
+    <result column="qq_open_id" jdbcType="VARCHAR" property="qqOpenId" />
+    <result column="weixin_open_id" jdbcType="VARCHAR" property="weixinOpenId" />
+    <result column="medical_num" jdbcType="VARCHAR" property="medicalNum" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, mobile, email, nick_name, country, province, city, user_img, expected_date_of_confinement, 
+    status, reg_time, password, is_switch_push_msg, open_id, user_type, gold, pregnant_stage, 
+    pregnant_week, sina_open_id, qq_open_id, weixin_open_id, medical_num
+  </sql>
+  
+  <!-- huangzg add -->
+  <select id="selUserInfo" resultMap="BaseResultMap">
+  	SELECT 
+  	<include refid="Base_Column_List" /> 
+  	FROM user_info WHERE nick_name is NULL;
+  </select>
+  
+  <select id="selUserList" resultMap="BaseResultMap">
+	SELECT 
+		* 
+	FROM(
+		SELECT 
+			ui.* ,ug.USER_ID,uei.login_time,case WHEN ug.USER_ID is NULL then '0' WHEN ug.USER_ID ='' then '0' ELSE '1' END isGroup
+		FROM user_info ui
+  		left join user_extra_info uei ON uei.user_id = ui.id
+		LEFT JOIN T_IM_USER_GROUP ug on ug.USER_ID = ui.id 
+		) t
+	where login_time >= '2017-03-01' and isGroup ='0'
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from user_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jumper.angel.hospital.doctor.entity.UserInfoBean">
+    insert into user_info (id, mobile, email, 
+      nick_name, country, province, 
+      city, user_img, expected_date_of_confinement, 
+      status, reg_time, password, 
+      is_switch_push_msg, open_id, user_type, 
+      gold, pregnant_stage, pregnant_week, 
+      sina_open_id, qq_open_id, weixin_open_id, 
+      medical_num)
+    values (#{id,jdbcType=INTEGER}, #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{nickName,jdbcType=VARCHAR}, #{country,jdbcType=INTEGER}, #{province,jdbcType=INTEGER}, 
+      #{city,jdbcType=INTEGER}, #{userImg,jdbcType=VARCHAR}, #{expectedDateOfConfinement,jdbcType=DATE}, 
+      #{status,jdbcType=INTEGER}, #{regTime,jdbcType=TIMESTAMP}, #{password,jdbcType=VARCHAR}, 
+      #{isSwitchPushMsg,jdbcType=INTEGER}, #{openId,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER}, 
+      #{gold,jdbcType=INTEGER}, #{pregnantStage,jdbcType=INTEGER}, #{pregnantWeek,jdbcType=INTEGER}, 
+      #{sinaOpenId,jdbcType=VARCHAR}, #{qqOpenId,jdbcType=VARCHAR}, #{weixinOpenId,jdbcType=VARCHAR}, 
+      #{medicalNum,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jumper.angel.hospital.doctor.entity.UserInfoBean">
+    insert into user_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">        id,      </if>
+      <if test="mobile != null">        mobile,      </if>
+      <if test="email != null">        email,      </if>
+      <if test="nickName != null">        nick_name,      </if>
+      <if test="country != null">        country,      </if>
+      <if test="province != null">        province,      </if>
+      <if test="city != null">        city,      </if>
+      <if test="userImg != null">        user_img,      </if>
+      <if test="expectedDateOfConfinement != null">        expected_date_of_confinement,      </if>
+      <if test="status != null">        status,      </if>      
+      <if test="regTime != null">        reg_time,      </if>
+      <if test="password != null">        password,      </if>      
+      <if test="isSwitchPushMsg != null">        is_switch_push_msg,      </if>
+      <if test="openId != null">        open_id,      </if>
+      <if test="userType != null">        user_type,      </if>
+      <if test="gold != null">        gold,      </if>
+      <if test="pregnantStage != null">        pregnant_stage,      </if>
+      <if test="pregnantWeek != null">        pregnant_week,      </if>
+      <if test="sinaOpenId != null">        sina_open_id,      </if>
+      <if test="qqOpenId != null">        qq_open_id,      </if>
+      <if test="weixinOpenId != null">        weixin_open_id,      </if>
+      <if test="medicalNum != null">        medical_num,      </if>
+    </trim>   
+     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">        #{id,jdbcType=INTEGER},      </if>
+      <if test="mobile != null">        #{mobile,jdbcType=VARCHAR},      </if>
+      <if test="email != null">        #{email,jdbcType=VARCHAR},      </if>
+      <if test="nickName != null">        #{nickName,jdbcType=VARCHAR},      </if>
+      <if test="country != null">        #{country,jdbcType=INTEGER},      </if>
+      <if test="province != null">        #{province,jdbcType=INTEGER},      </if>
+      <if test="city != null">        #{city,jdbcType=INTEGER},      </if>
+      <if test="userImg != null">        #{userImg,jdbcType=VARCHAR},      </if>
+      <if test="expectedDateOfConfinement != null">        #{expectedDateOfConfinement,jdbcType=DATE},      </if>
+      <if test="status != null">        #{status,jdbcType=INTEGER},      </if>
+      <if test="regTime != null">        #{regTime,jdbcType=TIMESTAMP},      </if>
+      <if test="password != null">        #{password,jdbcType=VARCHAR},      </if>
+      <if test="isSwitchPushMsg != null">        #{isSwitchPushMsg,jdbcType=INTEGER},      </if>
+      <if test="openId != null">        #{openId,jdbcType=VARCHAR},      </if>
+      <if test="userType != null">        #{userType,jdbcType=INTEGER},      </if>
+      <if test="gold != null">        #{gold,jdbcType=INTEGER},      </if>
+      <if test="pregnantStage != null">        #{pregnantStage,jdbcType=INTEGER},      </if>
+      <if test="pregnantWeek != null">        #{pregnantWeek,jdbcType=INTEGER},      </if>
+      <if test="sinaOpenId != null">        #{sinaOpenId,jdbcType=VARCHAR},      </if>
+      <if test="qqOpenId != null">        #{qqOpenId,jdbcType=VARCHAR},      </if>
+      <if test="weixinOpenId != null">        #{weixinOpenId,jdbcType=VARCHAR},      </if>
+      <if test="medicalNum != null">        #{medicalNum,jdbcType=VARCHAR},      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jumper.angel.hospital.doctor.entity.UserInfoBean">
+    update user_info
+    <set>
+      <if test="mobile != null">        mobile = #{mobile,jdbcType=VARCHAR},      </if>
+      <if test="email != null">        email = #{email,jdbcType=VARCHAR},      </if>
+      <if test="nickName != null">        nick_name = #{nickName,jdbcType=VARCHAR},      </if>
+      <if test="country != null">        country = #{country,jdbcType=INTEGER},      </if>
+      <if test="province != null">        province = #{province,jdbcType=INTEGER},      </if>
+      <if test="city != null">        city = #{city,jdbcType=INTEGER},      </if>      
+      <if test="userImg != null">        user_img = #{userImg,jdbcType=VARCHAR},      </if>
+      <if test="expectedDateOfConfinement != null">        expected_date_of_confinement = #{expectedDateOfConfinement,jdbcType=DATE},      </if>
+      <if test="status != null">        status = #{status,jdbcType=INTEGER},      </if>
+      <if test="regTime != null">        reg_time = #{regTime,jdbcType=TIMESTAMP},      </if>
+      <if test="password != null">        password = #{password,jdbcType=VARCHAR},      </if>
+      <if test="isSwitchPushMsg != null">        is_switch_push_msg = #{isSwitchPushMsg,jdbcType=INTEGER},      </if>
+      <if test="openId != null">        open_id = #{openId,jdbcType=VARCHAR},      </if>
+      <if test="userType != null">        user_type = #{userType,jdbcType=INTEGER},      </if>
+      <if test="gold != null">        gold = #{gold,jdbcType=INTEGER},      </if>
+      <if test="pregnantStage != null">        pregnant_stage = #{pregnantStage,jdbcType=INTEGER},      </if>
+      <if test="pregnantWeek != null">        pregnant_week = #{pregnantWeek,jdbcType=INTEGER},      </if>
+      <if test="sinaOpenId != null">        sina_open_id = #{sinaOpenId,jdbcType=VARCHAR},      </if>
+      <if test="qqOpenId != null">        qq_open_id = #{qqOpenId,jdbcType=VARCHAR},      </if>
+      <if test="weixinOpenId != null">        weixin_open_id = #{weixinOpenId,jdbcType=VARCHAR},      </if>
+      <if test="medicalNum != null">        medical_num = #{medicalNum,jdbcType=VARCHAR},      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jumper.angel.hospital.doctor.entity.UserInfoBean">
+    update user_info
+    set mobile = #{mobile,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      nick_name = #{nickName,jdbcType=VARCHAR},
+      country = #{country,jdbcType=INTEGER},
+      province = #{province,jdbcType=INTEGER},
+      city = #{city,jdbcType=INTEGER},
+      user_img = #{userImg,jdbcType=VARCHAR},
+      expected_date_of_confinement = #{expectedDateOfConfinement,jdbcType=DATE},
+      status = #{status,jdbcType=INTEGER},
+      reg_time = #{regTime,jdbcType=TIMESTAMP},
+      password = #{password,jdbcType=VARCHAR},
+      is_switch_push_msg = #{isSwitchPushMsg,jdbcType=INTEGER},
+      open_id = #{openId,jdbcType=VARCHAR},
+      user_type = #{userType,jdbcType=INTEGER},
+      gold = #{gold,jdbcType=INTEGER},
+      pregnant_stage = #{pregnantStage,jdbcType=INTEGER},
+      pregnant_week = #{pregnantWeek,jdbcType=INTEGER},
+      sina_open_id = #{sinaOpenId,jdbcType=VARCHAR},
+      qq_open_id = #{qqOpenId,jdbcType=VARCHAR},
+      weixin_open_id = #{weixinOpenId,jdbcType=VARCHAR},
+      medical_num = #{medicalNum,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

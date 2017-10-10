@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jumper.angel.home.information.mapper.NewsChanelsLabelMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jumper.angel.home.information.entity.NewsChanelsLabel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="label" property="label" jdbcType="VARCHAR" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="chanel_id" property="chanelId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, label, add_time, chanel_id
+  </sql>
+  
+  <!-- 通过频道id查询频道标签信息 -->
+  <select id="findNewsChanelsLabel" parameterType="int" resultMap="BaseResultMap">
+  	select
+  		<include refid="Base_Column_List"></include>
+  		from news_chanels_label where chanel_id=#{chanelId}
+  </select>
+  
+  <!-- 删除频道标签 -->
+  <delete id="deleteNewsChanelsLabel" parameterType="int">
+  	delete from news_chanels_label where chanel_id=#{chanelId}
+  </delete>
+  
+  <!-- 添加频道标签 -->
+  <insert id="addNewsChanelsLabel" parameterType="com.jumper.angel.home.information.entity.NewsChanelsLabel"
+  	keyColumn="GENERATED_KEY" keyProperty="id" flushCache="true" useGeneratedKeys="true">
+  	insert into news_chanels_label(chanel_id, label, add_time) values(#{chanelId}, #{label}, #{addTime})
+  </insert>
+</mapper>
